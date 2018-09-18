@@ -1,0 +1,7 @@
+base.logging module
+===================
+
+.. automodule:: base.logging
+    :members:
+    :undoc-members:
+    :show-inheritance:

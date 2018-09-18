@@ -1,0 +1,7 @@
+base.agent.tests module
+=======================
+
+.. automodule:: base.agent.tests
+    :members:
+    :undoc-members:
+    :show-inheritance:

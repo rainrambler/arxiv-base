@@ -1,0 +1,16 @@
+forms package
+=============
+
+.. automodule:: forms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   forms.csrf
+   forms.tests
+

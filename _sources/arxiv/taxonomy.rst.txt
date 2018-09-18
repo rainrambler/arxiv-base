@@ -1,0 +1,15 @@
+taxonomy package
+================
+
+.. automodule:: taxonomy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   taxonomy.tests
+

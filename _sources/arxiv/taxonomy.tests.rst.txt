@@ -1,0 +1,7 @@
+taxonomy.tests module
+=====================
+
+.. automodule:: taxonomy.tests
+    :members:
+    :undoc-members:
+    :show-inheritance:

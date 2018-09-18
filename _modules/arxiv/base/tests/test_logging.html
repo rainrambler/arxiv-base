@@ -1,0 +1,178 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arxiv.base.tests.test_logging &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for arxiv.base.tests.test_logging</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">unittest</span> <span class="k">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">mock</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+
+<span class="kn">import</span> <span class="nn">logging</span> <span class="k">as</span> <span class="nn">pyLogging</span>
+<span class="kn">from</span> <span class="nn">arxiv.base</span> <span class="k">import</span> <span class="n">logging</span>
+
+
+<div class="viewcode-block" id="TestGetLogger"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger">[docs]</a><span class="k">class</span> <span class="nc">TestGetLogger</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test :func:`.logging.getLogger`.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestGetLogger.test_get_logger_no_app_nor_request"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger.test_get_logger_no_app_nor_request">[docs]</a>    <span class="k">def</span> <span class="nf">test_get_logger_no_app_nor_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;There is no application nor request context.&quot;&quot;&quot;</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;foologger&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">pyLogging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+                              <span class="s2">&quot;Should return a logging.Logger instance&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+        <span class="n">captured_value</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;ERROR: &quot;foo&quot;&#39;</span><span class="p">,</span> <span class="n">captured_value</span><span class="p">,</span>
+                      <span class="s2">&quot;Should log normally even if request is not present&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestGetLogger.test_get_logger_with_request"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger.test_get_logger_with_request">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{logging.__name__}</span><span class="s1">.request&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_get_logger_with_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The request context is available.&quot;&quot;&quot;</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;REQUEST_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;foo-id-1234&#39;</span><span class="p">}</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;foologger&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">pyLogging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+                              <span class="s2">&quot;Should return a logging.Logger instance&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+        <span class="n">captured_value</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;foo-id-1234&#39;</span><span class="p">,</span> <span class="n">captured_value</span><span class="p">,</span>
+                      <span class="s2">&quot;Should include request ID in log messages&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestGetLogger.test_config_sets_loglevel"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger.test_config_sets_loglevel">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{logging.__name__}</span><span class="s1">.request&#39;</span><span class="p">)</span>
+    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s1">&#39;arxiv.base.logging.get_application_config&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_config_sets_loglevel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_get_config</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;LOGLEVEL param in config controls log level.&quot;&quot;&quot;</span>
+        <span class="n">mock_get_config</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;LOGLEVEL&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;REQUEST_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;foo-id-1234&#39;</span><span class="p">}</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;foologger&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+        <span class="n">captured_value</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">,</span> <span class="n">captured_value</span><span class="p">,</span>
+                      <span class="s2">&quot;Changing LOGLEVEL in the app config should change the&quot;</span>
+                      <span class="s2">&quot; logger log level&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestGetLogger.test_paper_id_is_set"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger.test_paper_id_is_set">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{logging.__name__}</span><span class="s1">.request&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_paper_id_is_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;``paperid`` is included in the log data.&quot;&quot;&quot;</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;REQUEST_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;foo-id-1234&#39;</span><span class="p">}</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;foologger&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;what&#39;</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;paperid&#39;</span><span class="p">:</span> <span class="s1">&#39;1234&#39;</span><span class="p">})</span>
+        <span class="n">captured_value</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;arxiv:1234&#39;</span><span class="p">,</span> <span class="n">captured_value</span><span class="p">,</span>
+                      <span class="s2">&quot;Should include paper ID in log messages&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestGetLogger.test_paper_id_is_not_set"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.tests.test_logging.html#arxiv.base.tests.test_logging.TestGetLogger.test_paper_id_is_not_set">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{logging.__name__}</span><span class="s1">.request&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_paper_id_is_not_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;``paperid`` is not included in the log data.&quot;&quot;&quot;</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;REQUEST_ID&#39;</span><span class="p">:</span> <span class="s1">&#39;foo-id-1234&#39;</span><span class="p">}</span>
+        <span class="n">stream</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;foologger&#39;</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;what&#39;</span><span class="p">)</span>
+        <span class="n">captured_value</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
+        <span class="n">stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;arxiv:null&#39;</span><span class="p">,</span> <span class="n">captured_value</span><span class="p">,</span>
+                      <span class="s2">&quot;Paper ID should be null in log messages&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../arxiv/modules.html">arxiv</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../base.html">arxiv.base</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

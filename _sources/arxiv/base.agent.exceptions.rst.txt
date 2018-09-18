@@ -1,0 +1,7 @@
+base.agent.exceptions module
+============================
+
+.. automodule:: base.agent.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:

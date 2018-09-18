@@ -1,0 +1,7 @@
+license.tests module
+====================
+
+.. automodule:: license.tests
+    :members:
+    :undoc-members:
+    :show-inheritance:

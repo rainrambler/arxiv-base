@@ -1,0 +1,7 @@
+util.schema module
+==================
+
+.. automodule:: util.schema
+    :members:
+    :undoc-members:
+    :show-inheritance:

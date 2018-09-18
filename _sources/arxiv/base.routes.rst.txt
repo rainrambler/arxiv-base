@@ -1,0 +1,7 @@
+base.routes module
+==================
+
+.. automodule:: base.routes
+    :members:
+    :undoc-members:
+    :show-inheritance:

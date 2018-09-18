@@ -1,0 +1,32 @@
+base package
+============
+
+.. automodule:: base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    base.agent
+    base.middleware
+    base.tests
+
+Submodules
+----------
+
+.. toctree::
+
+   base.alerts
+   base.config
+   base.converter
+   base.exceptions
+   base.factory
+   base.globals
+   base.logging
+   base.routes
+   base.urls
+

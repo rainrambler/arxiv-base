@@ -1,0 +1,7 @@
+base.tests.test\_alerts module
+==============================
+
+.. automodule:: base.tests.test_alerts
+    :members:
+    :undoc-members:
+    :show-inheritance:

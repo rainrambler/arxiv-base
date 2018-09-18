@@ -1,0 +1,7 @@
+base.exceptions module
+======================
+
+.. automodule:: base.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:

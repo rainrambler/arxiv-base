@@ -1,0 +1,7 @@
+base.middleware.base module
+===========================
+
+.. automodule:: base.middleware.base
+    :members:
+    :undoc-members:
+    :show-inheritance:

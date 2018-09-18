@@ -1,0 +1,7 @@
+forms.tests module
+==================
+
+.. automodule:: forms.tests
+    :members:
+    :undoc-members:
+    :show-inheritance:

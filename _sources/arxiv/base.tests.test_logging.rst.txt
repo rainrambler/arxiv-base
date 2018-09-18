@@ -1,0 +1,7 @@
+base.tests.test\_logging module
+===============================
+
+.. automodule:: base.tests.test_logging
+    :members:
+    :undoc-members:
+    :show-inheritance:

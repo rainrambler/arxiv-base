@@ -1,0 +1,16 @@
+base.agent package
+==================
+
+.. automodule:: base.agent
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   base.agent.exceptions
+   base.agent.tests
+

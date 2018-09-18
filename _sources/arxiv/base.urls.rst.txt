@@ -1,0 +1,7 @@
+base.urls module
+================
+
+.. automodule:: base.urls
+    :members:
+    :undoc-members:
+    :show-inheritance:

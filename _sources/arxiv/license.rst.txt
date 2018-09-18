@@ -1,0 +1,15 @@
+license package
+===============
+
+.. automodule:: license
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   license.tests
+

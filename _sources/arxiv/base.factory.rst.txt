@@ -1,0 +1,7 @@
+base.factory module
+===================
+
+.. automodule:: base.factory
+    :members:
+    :undoc-members:
+    :show-inheritance:

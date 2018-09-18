@@ -1,0 +1,255 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>arxiv.util.tests &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for arxiv.util.tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Tests for :mod:`arxiv.util.schema`.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="k">import</span> <span class="n">TestCase</span><span class="p">,</span> <span class="n">mock</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="kn">from</span> <span class="nn">arxiv</span> <span class="k">import</span> <span class="n">util</span>
+<span class="kn">from</span> <span class="nn">arxiv</span> <span class="k">import</span> <span class="n">status</span>
+
+
+<div class="viewcode-block" id="TestValidateRequest"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest">[docs]</a><span class="k">class</span> <span class="nc">TestValidateRequest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add request body validation to a Flask route.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestValidateRequest.setUp"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a :class:`.Flask` app and write a schema.&quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span>
+        <span class="n">schema_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FooResource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;baz&quot;</span><span class="p">,</span> <span class="s2">&quot;bat&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;baz&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;bat&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">schema_body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateRequest.tearDown"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clean up the temporary file used for the schema.&quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateRequest.test_decorate_route"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest.test_decorate_route">[docs]</a>    <span class="k">def</span> <span class="nf">test_decorate_route</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;:func:`.schema.validate_request` generates a decorator.&quot;&quot;&quot;</span>
+        <span class="n">decorator</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">decorator</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestValidateRequest.test_validate_with_invalid_request_data"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest.test_validate_with_invalid_request_data">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s1">&#39;arxiv.util.schema.request&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_validate_with_invalid_request_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decorated route function returns 400 bad request on invalid data.&quot;&quot;&quot;</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">get_json</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span>
+            <span class="n">return_value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;not&#39;</span><span class="p">:</span> <span class="s1">&#39;what you expected&#39;</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">decorator</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span>
+
+        <span class="nd">@decorator</span>
+        <span class="k">def</span> <span class="nf">foo_route</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{},</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">,</span> <span class="p">{}</span>
+
+        <span class="n">r_body</span><span class="p">,</span> <span class="n">r_status</span><span class="p">,</span> <span class="n">r_headers</span> <span class="o">=</span> <span class="n">foo_route</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span>
+                         <span class="s2">&quot;Failed to catch an invalid request.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="s1">&#39;reason&#39;</span><span class="p">,</span> <span class="n">r_body</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateRequest.test_validate_with_valid_request_data"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateRequest.test_validate_with_valid_request_data">[docs]</a>    <span class="nd">@mock</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span><span class="s1">&#39;arxiv.util.schema.request&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">test_validate_with_valid_request_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mock_request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decorated route function returns normally on valid data.&quot;&quot;&quot;</span>
+        <span class="n">mock_request</span><span class="o">.</span><span class="n">get_json</span> <span class="o">=</span> <span class="n">mock</span><span class="o">.</span><span class="n">MagicMock</span><span class="p">(</span>
+            <span class="n">return_value</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;baz&#39;</span><span class="p">:</span> <span class="s1">&#39;asdf&#39;</span><span class="p">,</span> <span class="s1">&#39;bat&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">decorator</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">validate_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span>
+
+        <span class="nd">@decorator</span>
+        <span class="k">def</span> <span class="nf">foo_route</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{},</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">,</span> <span class="p">{}</span>
+
+        <span class="n">r_body</span><span class="p">,</span> <span class="n">r_status</span><span class="p">,</span> <span class="n">r_headers</span> <span class="o">=</span> <span class="n">foo_route</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">r_status</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">,</span>
+                         <span class="s2">&quot;Interfered with a valid request&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestValidateSchema"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema">[docs]</a><span class="k">class</span> <span class="nc">TestValidateSchema</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Validate data against a JSON Schema specification.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestValidateSchema.setUp"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provision a temporary file for the schema.&quot;&quot;&quot;</span>
+        <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestValidateSchema.tearDown"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clean up the temporary file used for the schema.&quot;&quot;&quot;</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateSchema.test_load_valid_schema"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.test_load_valid_schema">[docs]</a>    <span class="k">def</span> <span class="nf">test_load_valid_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;:func:`.schema.load` returns a callable validator.&quot;&quot;&quot;</span>
+        <span class="n">schema_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FooResource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;baz&quot;</span><span class="p">,</span> <span class="s2">&quot;bat&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;baz&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;bat&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">schema_body</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">validator</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s1">&#39;Failed to load valid schema: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span> <span class="s1">&#39;__call__&#39;</span><span class="p">))</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">validator</span><span class="p">({</span><span class="s1">&#39;baz&#39;</span><span class="p">:</span> <span class="s1">&#39;asdf&#39;</span><span class="p">,</span> <span class="s1">&#39;bat&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
+        <span class="k">except</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fail</span><span class="p">(</span><span class="s1">&#39;Validation failed on valid data: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateSchema.test_load_invalid_schema"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.test_load_invalid_schema">[docs]</a>    <span class="k">def</span> <span class="nf">test_load_invalid_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;:func:`.util.schema.load` raises IOError if schema is not valid JSON.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;thisisnotajsons...&quot;.&quot;{{chema&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">IOError</span><span class="p">):</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateSchema.test_load_nonexistant_schema"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.test_load_nonexistant_schema">[docs]</a>    <span class="k">def</span> <span class="nf">test_load_nonexistant_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;:func:`.util.schema.load` raises IOError if schema does not exist.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">IOError</span><span class="p">):</span>
+            <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;/tmp/is/unlikely/to/exist&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestValidateSchema.test_validation_failed"><a class="viewcode-back" href="../../../arxiv/arxiv.util.tests.html#arxiv.util.tests.TestValidateSchema.test_validation_failed">[docs]</a>    <span class="k">def</span> <span class="nf">test_validation_failed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Validator raises :class:`.util.schema.ValidationError` on bad data.&quot;&quot;&quot;</span>
+        <span class="n">schema_body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;FooResource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;additionalProperties&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;baz&quot;</span><span class="p">,</span> <span class="s2">&quot;bat&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;baz&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;bat&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;integer&quot;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">})</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">schema_body</span><span class="p">)</span>
+
+        <span class="n">validator</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_path</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">):</span>
+            <span class="n">validator</span><span class="p">({</span><span class="s1">&#39;nobody&#39;</span><span class="p">:</span> <span class="s1">&#39;expects&#39;</span><span class="p">,</span> <span class="s1">&#39;thespanish&#39;</span><span class="p">:</span> <span class="s1">&#39;inquisition&#39;</span><span class="p">})</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

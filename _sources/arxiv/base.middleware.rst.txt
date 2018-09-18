@@ -1,0 +1,17 @@
+base.middleware package
+=======================
+
+.. automodule:: base.middleware
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   base.middleware.base
+   base.middleware.request_logs
+   base.middleware.tests
+

@@ -1,0 +1,16 @@
+util package
+============
+
+.. automodule:: util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   util.schema
+   util.tests
+

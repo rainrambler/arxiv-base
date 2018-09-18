@@ -1,0 +1,7 @@
+base.globals module
+===================
+
+.. automodule:: base.globals
+    :members:
+    :undoc-members:
+    :show-inheritance:

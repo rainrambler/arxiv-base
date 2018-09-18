@@ -1,0 +1,7 @@
+forms.csrf module
+=================
+
+.. automodule:: forms.csrf
+    :members:
+    :undoc-members:
+    :show-inheritance:

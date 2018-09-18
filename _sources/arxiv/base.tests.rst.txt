@@ -1,0 +1,19 @@
+base.tests package
+==================
+
+.. automodule:: base.tests
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   base.tests.test_alerts
+   base.tests.test_exception_handling
+   base.tests.test_factory
+   base.tests.test_logging
+   base.tests.test_urls
+

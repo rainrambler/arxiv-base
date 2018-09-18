@@ -1,0 +1,7 @@
+base.tests.test\_factory module
+===============================
+
+.. automodule:: base.tests.test_factory
+    :members:
+    :undoc-members:
+    :show-inheritance:
