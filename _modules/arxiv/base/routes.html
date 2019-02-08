@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -42,6 +42,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Blueprint</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">make_response</span><span class="p">,</span> \
     <span class="n">Response</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">url_for</span>
 
@@ -51,7 +52,8 @@
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">alerts</span>
 
-<span class="n">blueprint</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;ui&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">blueprint</span> <span class="o">=</span> <span class="n">Blueprint</span><span class="p">(</span><span class="s1">&#39;ui&#39;</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="n">url_prefix</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                      <span class="n">static_folder</span><span class="o">=</span><span class="s1">&#39;./static_test&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="test_page"><a class="viewcode-back" href="../../../arxiv/arxiv.base.routes.html#arxiv.base.routes.test_page">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/styleguide&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
@@ -63,14 +65,48 @@
     <span class="c1"># Demonstrate flash alerts. To see these alerts, reload the page.</span>
     <span class="n">help_url</span> <span class="o">=</span> <span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;help&#39;</span><span class="p">)</span>
     <span class="n">alerts</span><span class="o">.</span><span class="n">flash_warning</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;This is a warning, see &lt;a href=&quot;</span><span class="si">{help_url}</span><span class="s1">&quot;&gt;the&#39;</span>
-                           <span class="n">f</span><span class="s1">&#39; docs&lt;/a&gt; for more information&#39;</span><span class="p">,</span>
-                           <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Warning title&#39;</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                         <span class="n">f</span><span class="s1">&#39; docs&lt;/a&gt; for more information&#39;</span><span class="p">,</span>
+                         <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Warning title&#39;</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">alerts</span><span class="o">.</span><span class="n">flash_info</span><span class="p">(</span><span class="s1">&#39;This is some info&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Info title&#39;</span><span class="p">)</span>
     <span class="n">alerts</span><span class="o">.</span><span class="n">flash_failure</span><span class="p">(</span><span class="s1">&#39;This is a failure&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Failure title&#39;</span><span class="p">)</span>
     <span class="n">alerts</span><span class="o">.</span><span class="n">flash_success</span><span class="p">(</span><span class="s1">&#39;This is a success&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Success title&#39;</span><span class="p">)</span>
     <span class="n">alerts</span><span class="o">.</span><span class="n">flash_warning</span><span class="p">(</span><span class="s1">&#39;This is a warning that cannot be dismissed&#39;</span><span class="p">,</span>
                            <span class="n">dismissable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">response</span></div>
+
+
+<div class="viewcode-block" id="test_macros"><a class="viewcode-back" href="../../../arxiv/arxiv.base.routes.html#arxiv.base.routes.test_macros">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/macros&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">test_macros</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Test the template macros.&quot;&quot;&quot;</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;arxiv_id&#39;</span><span class="p">:</span> <span class="s1">&#39;physics/9707012&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Supersymmetric partner chirping of Newtonian free damping&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="s1">&#39;H.C. Rosu, J.L. Romero, J. Socorro&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;abstract&#39;</span><span class="p">:</span> <span class="s2">&quot;We connect the classical free damping cases by means of&quot;</span>
+                    <span class="s2">&quot; Rosner&#39;s construction in supersymmetric quantum&quot;</span>
+                    <span class="s2">&quot; mechanics. Starting with the critical damping, one&quot;</span>
+                    <span class="s2">&quot; can obtain in the underdamping case a chirping of&quot;</span>
+                    <span class="s2">&quot; instantaneous physical frequency $\omega ^</span><span class="si">{2}</span><span class="s2">(t) \propto&quot;</span>
+                    <span class="s2">&quot; \omega_</span><span class="si">{u}</span><span class="s2">^</span><span class="si">{2}</span><span class="s2">sech^2(\omega_</span><span class="si">{u}</span><span class="s2">t)$, whereas in the&quot;</span>
+                    <span class="s2">&quot; overdamped case the </span><span class="se">\&quot;</span><span class="s2">chirping</span><span class="se">\&quot;</span><span class="s2"> is of the (unphysical)&quot;</span>
+                    <span class="s2">&quot; type $\omega ^</span><span class="si">{2}</span><span class="s2">(t)\propto\omega_</span><span class="si">{o}</span><span class="s2">^</span><span class="si">{2}</span><span class="s2">sec^</span><span class="si">{2}</span><span class="s2">(\omega_&quot;</span>
+                    <span class="s2">&quot;</span><span class="si">{o}</span><span class="s2">t)$, where $\omega_</span><span class="si">{u}</span><span class="s2">$ and $\omega_</span><span class="si">{o}</span><span class="s2">$ are the&quot;</span>
+                    <span class="s2">&quot; underdamped and overdamped frequency parameters,&quot;</span>
+                    <span class="s2">&quot; respectively.</span><span class="se">\n\n</span><span class="s2">This has some linefeeds&quot;&quot;&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;comments&#39;</span><span class="p">:</span> <span class="s2">&quot;This version (physics/9707012v2) was not stored by arXiv.&quot;</span>
+                    <span class="s2">&quot; A subsequent replacement was made before versioning was&quot;</span>
+                    <span class="s2">&quot; introduced.&quot;</span><span class="p">,</span>
+        <span class="s1">&#39;primary_category&#39;</span><span class="p">:</span> <span class="s1">&#39;cond-mat.supr-con&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;submitted_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+        <span class="s1">&#39;submission_history&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;submitted_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+            <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;submitted_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+            <span class="p">{</span><span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;submitted_date&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()},</span>
+        <span class="p">],</span>
+        <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s1">&#39;doi&#39;</span><span class="p">:</span> <span class="s1">&#39;10.1000/182&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;base/testmacros.html&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">,</span> <span class="n">pagetitle</span><span class="o">=</span><span class="s1">&#39;Home&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="test_404"><a class="viewcode-back" href="../../../arxiv/arxiv.base.routes.html#arxiv.base.routes.test_404">[docs]</a><span class="nd">@blueprint</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/404&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
@@ -134,6 +170,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -167,8 +204,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

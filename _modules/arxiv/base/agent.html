@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -106,7 +106,7 @@
 <span class="sd">[Localstack](https://github.com/localstack/localstack) provides a Kinesis</span>
 <span class="sd">for testing/development purposes (port 4568). You can use the config</span>
 <span class="sd">parameters above to point to a local instance of localstack (e.g. run with</span>
-<span class="sd">Docker). </span>
+<span class="sd">Docker).</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -223,7 +223,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">shard_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
-                 <span class="n">access_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">secret_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">region</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+                 <span class="n">access_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">secret_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">region</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
                  <span class="n">checkpointer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DiskCheckpointManager</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">back_off</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
                  <span class="n">endpoint</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -256,12 +258,20 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Getting a new connection to Kinesis at </span><span class="si">{endpoint}</span><span class="s1">&#39;</span>
                     <span class="n">f</span><span class="s1">&#39; in region </span><span class="si">{region}</span><span class="s1">, with SSL verification=</span><span class="si">{verify}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;kinesis&#39;</span><span class="p">,</span>
-                                   <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">access_key</span><span class="p">,</span>
-                                   <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">secret_key</span><span class="p">,</span>
-                                   <span class="n">endpoint_url</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
-                                   <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
-                                   <span class="n">region_name</span><span class="o">=</span><span class="n">region</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">endpoint_url</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+            <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+            <span class="n">region_name</span><span class="o">=</span><span class="n">region</span>
+        <span class="p">)</span>
+        <span class="c1"># Only add these if they are set/truthy. This allows us to use a</span>
+        <span class="c1"># shared credentials file via an environment variable.</span>
+        <span class="k">if</span> <span class="n">access_key</span> <span class="ow">and</span> <span class="n">secret_key</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+                <span class="n">aws_access_key_id</span><span class="o">=</span><span class="n">access_key</span><span class="p">,</span>
+                <span class="n">aws_secret_access_key</span><span class="o">=</span><span class="n">secret_key</span>
+            <span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;New client with parameters: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;kinesis&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Waiting for </span><span class="si">{self.stream_name}</span><span class="s1"> to be available&#39;</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -288,7 +298,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">StopProcessing</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Received signal </span><span class="si">{signal}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BaseConsumer.wait_for_stream"><a class="viewcode-back" href="../../../arxiv/arxiv.base.agent.html#arxiv.base.agent.BaseConsumer.wait_for_stream">[docs]</a>    <span class="nd">@retry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="nd">@retry</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">wait_for_stream</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wait for the stream to become available.</span>
@@ -315,7 +325,7 @@
             <span class="k">raise</span> <span class="n">StreamNotAvailable</span><span class="p">(</span><span class="s1">&#39;Could not connect to stream&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">PartialCredentialsError</span><span class="p">,</span> <span class="n">NoCredentialsError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Credentials missing or incomplete: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="s1">&#39;Credentials missing&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+            <span class="k">raise</span> <span class="n">ConfigurationError</span><span class="p">(</span><span class="s1">&#39;Credentials missing&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
     <span class="k">def</span> <span class="nf">_get_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -371,14 +381,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">checkpointer</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Set checkpoint at </span><span class="si">{self.position}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BaseConsumer.get_records"><a class="viewcode-back" href="../../../arxiv/arxiv.base.agent.html#arxiv.base.agent.BaseConsumer.get_records">[docs]</a>    <span class="nd">@retry</span><span class="p">(</span><span class="n">retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="nd">@retry</span><span class="p">(</span><span class="n">retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_records</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get the next batch of ``limit`` or fewer records.&quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Get more records from </span><span class="si">{iterator}</span><span class="s1">, limit </span><span class="si">{limit}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_records</span><span class="p">(</span><span class="n">ShardIterator</span><span class="o">=</span><span class="n">iterator</span><span class="p">,</span>
                                            <span class="n">Limit</span><span class="o">=</span><span class="n">limit</span><span class="p">)</span>
         <span class="n">iterator</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s1">&#39;NextShardIterator&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">response</span></div>
+        <span class="k">return</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">response</span>
 
     <span class="k">def</span> <span class="nf">_check_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;If a processing duration is set, exit if duration is exceeded.&quot;&quot;&quot;</span>
@@ -526,6 +536,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -559,8 +570,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

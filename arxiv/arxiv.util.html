@@ -14,10 +14,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="arxiv.util.schema module" href="arxiv.util.schema.html" />
+    <link rel="next" title="arxiv.util.tests package" href="arxiv.util.tests.html" />
     <link rel="prev" title="arxiv.taxonomy.tests module" href="arxiv.taxonomy.tests.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -38,12 +38,29 @@
   <div class="section" id="module-arxiv.util">
 <span id="arxiv-util-package"></span><h1>arxiv.util package<a class="headerlink" href="#module-arxiv.util" title="Permalink to this headline">¶</a></h1>
 <p>arXiv base utilities.</p>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.util.tests.html">arxiv.util.tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.tests.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.tests.test_authors.html">arxiv.util.tests.test_authors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.tests.test_schema.html">arxiv.util.tests.test_schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.tests.test_tex2utf.html">arxiv.util.tests.test_tex2utf module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.util.authors.html">arxiv.util.authors module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="arxiv.util.schema.html">arxiv.util.schema module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="arxiv.util.tests.html">arxiv.util.tests module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.util.tex2utf.html">arxiv.util.tex2utf module</a></li>
 </ul>
 </div>
 </div>
@@ -69,15 +86,10 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">arxiv.util package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.html">arxiv package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -85,8 +97,10 @@
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.html">arxiv package</a><ul>
       <li>Previous: <a href="arxiv.taxonomy.tests.html" title="previous chapter">arxiv.taxonomy.tests module</a></li>
-      <li>Next: <a href="arxiv.util.schema.html" title="next chapter">arxiv.util.schema module</a></li>
+      <li>Next: <a href="arxiv.util.tests.html" title="next chapter">arxiv.util.tests package</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -111,8 +125,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/arxiv/arxiv.util.rst.txt"

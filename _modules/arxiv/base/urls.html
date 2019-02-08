@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -91,6 +91,12 @@
 
 <span class="kn">from</span> <span class="nn">arxiv.base.exceptions</span> <span class="k">import</span> <span class="n">ConfigurationError</span>
 <span class="kn">from</span> <span class="nn">arxiv.base.converter</span> <span class="k">import</span> <span class="n">ArXivConverter</span>
+<span class="kn">from</span> <span class="nn">arxiv.base</span> <span class="k">import</span> <span class="n">logging</span>
+
+<span class="kn">from</span> <span class="nn">.clickthrough</span> <span class="k">import</span> <span class="n">clickthrough_url</span>
+<span class="kn">from</span> <span class="nn">.links</span> <span class="k">import</span> <span class="n">urlize</span><span class="p">,</span> <span class="n">urlizer</span><span class="p">,</span> <span class="n">url_for_doi</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <span class="c1"># The module arxiv.base.config needs to be able to load its values from</span>
@@ -158,6 +164,24 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">err</span>
     <span class="k">return</span> <span class="n">url</span></div>
+
+
+<div class="viewcode-block" id="canonical_url"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.canonical_url">[docs]</a><span class="k">def</span> <span class="nf">canonical_url</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate the canonical URL for an arXiv identifier.</span>
+
+<span class="sd">    This can be done from just the ID because the category is only needed if it</span>
+<span class="sd">    is in the ID. id can be just the id or idv or cat/id or cat/idv.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: This should be better.</span>
+    <span class="c1"># There should probably be something like INTERNAL_URL_SCHEMA</span>
+    <span class="c1"># Also, /abs should probably be specified somewhere else</span>
+    <span class="c1"># like arxiv.base.canonical</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EXTERNAL_URL_SCHEME&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAIN_SERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;arxiv.org&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{host}</span><span class="s1">/abs/</span><span class="si">{id}</span><span class="s1">v</span><span class="si">{version}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{host}</span><span class="s1">/abs/</span><span class="si">{id}</span><span class="s1">&#39;</span></div>
 </pre></div>
 
           </div>
@@ -179,6 +203,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -212,8 +237,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
