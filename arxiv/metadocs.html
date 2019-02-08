@@ -142,23 +142,15 @@ Indices and tables
 </div>
 </div>
 <p>If you have an issue with ModuleNotFoundError, then the paths in the conf.py need to be changed. Add the following to the top of docs/conf.py:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">code</span><span class="o">-</span><span class="n">block</span><span class="p">::</span> <span class="n">python</span>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">conf.py</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
-<blockquote>
-<div><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">caption:</th><td class="field-body">conf.py</td>
-</tr>
-</tbody>
-</table>
-<p>import os
-import sys
-sys.path.insert(0, os.path.abspath(‘.’))
-sys.path.append(os.path.abspath(‘..’))</p>
-</div></blockquote>
+</div>
 </div>
 <div class="section" id="configuring-github-pages">
 <h2>Configuring GitHub pages<a class="headerlink" href="#configuring-github-pages" title="Permalink to this headline">¶</a></h2>
@@ -175,8 +167,8 @@ sys.path.append(os.path.abspath(‘..’))</p>
 <span class="n">bash</span> <span class="n">update</span><span class="o">-</span><span class="n">docs</span><span class="o">.</span><span class="n">sh</span>
 </pre></div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">update-docs.sh</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">update-docs.sh</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nv">SRCDOCS</span><span class="o">=</span><span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>/docs/_build/html
 <span class="nv">REPO</span><span class="o">=</span>cul-it/arxiv-compiler
