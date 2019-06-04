@@ -159,14 +159,6 @@ class HTTPIntegration(metaclass=MetaIntegration):
             raise_for_http_status(resp.status_code, resp)
             raise RequestFailed(f'Unexpected code: {resp.status_code}', resp)
 
-    def _parse_location(self, location: str) -> str:
-        endpoint_path = urlparse(self._endpoint).path
-        if self._endpoint in location:
-            _, location = location.split(self._endpoint, 1)
-        elif endpoint_path in location:
-            _, location = location.split(endpoint_path, 1)
-        return location
-
     def request(self, method: str, path: str, token: Optional[str] = None,
                 expected_code: List[int] = [status.OK],
                 allow_2xx_redirects: bool = True,
@@ -179,7 +171,9 @@ class HTTPIntegration(metaclass=MetaIntegration):
         resp: requests.Response
         try:
             make_request = getattr(self._session, method)
-            resp = make_request(self._path(path), **kwargs)
+            if '://' not in path:
+                path = self._path(path)
+            resp = make_request(path, **kwargs)
             logger.debug('Got response %s', resp)
         except requests.exceptions.SSLError as e:
             raise SecurityException('SSL failed: %s' % e) from e
@@ -191,7 +185,7 @@ class HTTPIntegration(metaclass=MetaIntegration):
         is_2xx = status.OK < resp.status_code \
             and resp.status_code < status.MULTIPLE_CHOICES
         if allow_2xx_redirects and is_2xx and 'Location' in resp.headers:
-            loc = self._parse_location(resp.headers['Location'])
+            loc = resp.headers['Location']
             logger.debug('Following 2xx redirect to %s', loc)
             resp = self.request('get', loc, token, expected_code,
                                 allow_2xx_redirects)
