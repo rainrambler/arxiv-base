@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv package &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv">
+<span id="arxiv-package"></span><h1>arxiv package<a class="headerlink" href="#module-arxiv" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.middleware.html">arxiv.base.middleware package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.middleware.html#writing-a-middleware">Writing a middleware</a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.middleware.html#adding-a-middleware-to-a-project">Adding a middleware to a project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.middleware.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="arxiv.base.middleware.base.html">arxiv.base.middleware.base module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="arxiv.base.middleware.request_logs.html">arxiv.base.middleware.request_logs module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.urls.html">arxiv.base.urls package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.urls.html#using-environment-variables">Using environment variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.urls.html#caveats">Caveats</a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.urls.html#danger-memory-leaks-lurk-here">Danger! Memory leaks lurk here</a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.urls.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="arxiv.base.urls.clickthrough.html">arxiv.base.urls.clickthrough module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="arxiv.base.urls.links.html">arxiv.base.urls.links module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.agent.html">arxiv.base.agent module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.agent.html#using-baseconsumer">Using <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsumer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.agent.html#testing-and-development">Testing and development</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.alerts.html">arxiv.base.alerts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.app_tests.html">arxiv.base.app_tests module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="arxiv.base.app_tests.html#usage">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.config.html">arxiv.base.config module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.context_processors.html">arxiv.base.context_processors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.converter.html">arxiv.base.converter module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.exceptions.html">arxiv.base.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.factory.html">arxiv.base.factory module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.filters.html">arxiv.base.filters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.globals.html">arxiv.base.globals module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.logging.html">arxiv.base.logging module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.base.routes.html">arxiv.base.routes module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.forms.csrf.html">arxiv.forms.csrf module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.taxonomy.category.html">arxiv.taxonomy.category module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.taxonomy.definitions.html">arxiv.taxonomy.definitions module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.authors.html">arxiv.util.authors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.schema.html">arxiv.util.schema module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.serialize.html">arxiv.util.serialize module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="arxiv.util.tex2utf.html">arxiv.util.tex2utf module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

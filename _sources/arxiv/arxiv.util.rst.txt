@@ -11,6 +11,8 @@ Submodules
 
 .. toctree::
 
+   arxiv.util.authors
    arxiv.util.schema
-   arxiv.util.tests
+   arxiv.util.serialize
+   arxiv.util.tex2utf
 

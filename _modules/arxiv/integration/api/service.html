@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.integration.api.service &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for arxiv.integration.api.service</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides a base class for HTTP API integrations.</span>
+
+<span class="sd">The goal of this module is to handle boilerplate connection and request</span>
+<span class="sd">handling that is invariant (or nearly so) among service integration modules</span>
+<span class="sd">that target HTTP APIs.</span>
+
+<span class="sd">.. todo::</span>
+<span class="sd">   Make retry parameters easier to configure.</span>
+
+
+<span class="sd">Specific goals</span>
+<span class="sd">--------------</span>
+
+<span class="sd">- Handle verifying the response status code, and raise appropriate and</span>
+<span class="sd">  semantically meaningful exceptions.</span>
+<span class="sd">- Handle setting up a persistent HTTP session to cut down on overhead.</span>
+<span class="sd">- Provide basic retry functionality.</span>
+<span class="sd">- Handle binding a service instance (with its persistent session) to the</span>
+<span class="sd">  Flask application context.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">http</span> <span class="k">import</span> <span class="n">HTTPStatus</span> <span class="k">as</span> <span class="n">status</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">urllib3.util.retry</span> <span class="k">import</span> <span class="n">Retry</span>
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">urlunparse</span><span class="p">,</span> <span class="n">urlencode</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">g</span><span class="p">,</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">current_app</span>
+
+
+<span class="kn">from</span> <span class="nn">..meta</span> <span class="k">import</span> <span class="n">MetaIntegration</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="k">import</span> <span class="n">RequestFailed</span><span class="p">,</span> <span class="n">RequestUnauthorized</span><span class="p">,</span> <span class="n">RequestForbidden</span><span class="p">,</span> \
+    <span class="n">NotFound</span><span class="p">,</span> <span class="n">BadRequest</span><span class="p">,</span> <span class="n">SecurityException</span><span class="p">,</span> <span class="n">ConnectionFailed</span><span class="p">,</span> <span class="n">BadResponse</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DEFAULT_ENDPOINT</span> <span class="o">=</span> <span class="s1">&#39;http://fooservice:8000/&#39;</span>
+<span class="n">DEFAULT_VERIFY</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="HTTPIntegration"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration">[docs]</a><span class="k">class</span> <span class="nc">HTTPIntegration</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">MetaIntegration</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Integrate with a service over HTTP.</span>
+
+<span class="sd">    Provides binding to the application context, so that connections can be</span>
+<span class="sd">    re-used.</span>
+
+<span class="sd">    To implement an HTTP API service integration, define a class that inherits</span>
+<span class="sd">    from :class:`.HTTPIntegration`. At minimum, it should include an inner</span>
+<span class="sd">    class called ``Meta`` with the attribute ``service_name``; this is used to</span>
+<span class="sd">    identify the configuration parameters for the service. For example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       class MyCoolIntegration(HTTPIntegration):</span>
+<span class="sd">           class Meta:</span>
+<span class="sd">               service_name = &quot;cool_beans&quot;</span>
+
+<span class="sd">           def get_something(self, anything: str, token: str) -&gt; dict:</span>
+<span class="sd">               data, _, _ = self.json(&quot;get&quot;, f&quot;/thing/{anything}&quot;, token)</span>
+<span class="sd">               return data</span>
+
+
+<span class="sd">    and in your ``config.py``, include:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       COOL_BEANS_ENDPOINT = &quot;http://thecool.beans.arxiv.org:9876&quot;</span>
+<span class="sd">       COOL_BEANS_VERIFY = False   # (or True, if you are using SSL)</span>
+
+
+<span class="sd">    Thanks to :class:`arxiv.integration.meta.MetaIntegration`, you should be</span>
+<span class="sd">    able to use this integration in your app like:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       from my.cool.services import MyCoolIntegration</span>
+<span class="sd">       from arxiv.users import auth</span>
+
+<span class="sd">       app = Flask(__name__)</span>
+<span class="sd">       MyCoolIntegration.init_app(app)</span>
+<span class="sd">       auth.Auth(app)</span>
+
+<span class="sd">       @app.route(&#39;/foo&#39;)</span>
+<span class="sd">       def foo():</span>
+<span class="sd">           mci = MyCoolIntegration.current_session()</span>
+<span class="sd">           mci.get_something(&#39;foo&#39;, request.environ[&#39;token&#39;])</span>
+<span class="sd">           ...</span>
+
+
+<span class="sd">    Any additional parameters in your app config that start with the</span>
+<span class="sd">    ``service_name`` in upper case will be passed in as kwargs to the</span>
+<span class="sd">    constructor. By default, these are stored on ``._extra`` for internal</span>
+<span class="sd">    use.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="HTTPIntegration.Meta"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.Meta">[docs]</a>    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Additional info about this class.</span>
+
+<span class="sd">        This should be overridden by any child class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">service_name</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">verify</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="o">**</span><span class="n">extra</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an HTTP session.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        endpoint : str</span>
+<span class="sd">            Base service URI.</span>
+<span class="sd">        verify : bool</span>
+<span class="sd">            Whether or not SSL certificate verification should enforced.</span>
+<span class="sd">        headers : dict</span>
+<span class="sd">            Headers to be included on all requests.</span>
+<span class="sd">        extra : kwargs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extra</span> <span class="o">=</span> <span class="n">extra</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verify</span> <span class="o">=</span> <span class="n">verify</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_retry</span> <span class="o">=</span> <span class="n">Retry</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">read</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">connect</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">backoff_factor</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_adapter</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">adapters</span><span class="o">.</span><span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_retry</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;{urlparse(endpoint).scheme}://&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_adapter</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">):</span>
+            <span class="n">endpoint</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span> <span class="o">=</span> <span class="n">endpoint</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Generate a full path for a request.&quot;&quot;&quot;</span>
+        <span class="n">o</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">urlunparse</span><span class="p">((</span>  <span class="c1"># type: ignore</span>
+            <span class="n">o</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span> <span class="n">o</span><span class="o">.</span><span class="n">netloc</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{o.path}{path}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span> <span class="n">urlencode</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="kc">None</span>
+        <span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_check_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resp</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">,</span>
+                      <span class="n">expected_code</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">OK</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check for unexpected or errant status codes.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_code</span><span class="p">:</span>
+            <span class="n">raise_for_http_status</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">RequestFailed</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Unexpected code: </span><span class="si">{resp.status_code}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_parse_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">endpoint_path</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span><span class="p">)</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span> <span class="ow">in</span> <span class="n">location</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoint</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">endpoint_path</span> <span class="ow">in</span> <span class="n">location</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">location</span> <span class="o">=</span> <span class="n">location</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">endpoint_path</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">location</span>
+
+<div class="viewcode-block" id="HTTPIntegration.request"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">expected_code</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">OK</span><span class="p">],</span>
+                <span class="n">allow_2xx_redirects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make an HTTP request with error/code handling.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">token</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;headers&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;headers&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;Authorization&#39;</span><span class="p">:</span> <span class="n">token</span><span class="p">})</span>
+        <span class="n">resp</span><span class="p">:</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">make_request</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_session</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">make_request</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got response </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">SSLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SecurityException</span><span class="p">(</span><span class="s1">&#39;SSL failed: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConnectionFailed</span><span class="p">(</span><span class="s1">&#39;Could not connect: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="c1"># 200-series redirects are a common pattern on our projects, so these</span>
+        <span class="c1"># should be supported.</span>
+        <span class="n">is_2xx</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">OK</span> <span class="o">&lt;</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> \
+            <span class="ow">and</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&lt;</span> <span class="n">status</span><span class="o">.</span><span class="n">MULTIPLE_CHOICES</span>
+        <span class="k">if</span> <span class="n">allow_2xx_redirects</span> <span class="ow">and</span> <span class="n">is_2xx</span> <span class="ow">and</span> <span class="s1">&#39;Location&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="p">:</span>
+            <span class="n">loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_location</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s1">&#39;Location&#39;</span><span class="p">])</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Following 2xx redirect to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">loc</span><span class="p">)</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="n">loc</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">expected_code</span><span class="p">,</span>
+                                <span class="n">allow_2xx_redirects</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_status</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">expected_code</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">resp</span></div>
+
+<div class="viewcode-block" id="HTTPIntegration.json"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.json">[docs]</a>    <span class="k">def</span> <span class="nf">json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="n">expected_code</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">status</span><span class="o">.</span><span class="n">OK</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform an HTTP request to a JSON endpoint, and handle any exceptions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Response content.</span>
+<span class="sd">        int</span>
+<span class="sd">            HTTP status code.</span>
+<span class="sd">        dict</span>
+<span class="sd">            Response headers.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">expected_code</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">decoder</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadResponse</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Could not decode&#39;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span></div>
+
+<div class="viewcode-block" id="HTTPIntegration.get_status"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.get_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get the status of the service.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Get service status&#39;</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Got status response: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">content</span></div>
+
+<div class="viewcode-block" id="HTTPIntegration.init_app"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.init_app">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">init_app</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set default configuration parameters for an application instance.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;Meta&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Child class must have Meta class&#39;</span><span class="p">)</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Meta</span><span class="o">.</span><span class="n">service_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">_ENDPOINT&#39;</span><span class="p">,</span> <span class="n">DEFAULT_ENDPOINT</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">_VERIFY&#39;</span><span class="p">,</span> <span class="n">DEFAULT_VERIFY</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HTTPIntegration.get_session"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.get_session">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_session</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Flask</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;HTTPIntegration&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get a new session with the service.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;Meta&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Child class must have Meta class&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">app</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">app</span> <span class="o">=</span> <span class="n">current_app</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Meta</span><span class="o">.</span><span class="n">service_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_namespace</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">_&#39;</span><span class="p">)</span>     <span class="c1"># type: ignore</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;endpoint&#39;</span><span class="p">)</span>
+            <span class="n">verify</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;verify&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Must call init_app() on app before use&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Create </span><span class="si">%s</span><span class="s1"> session at endpoint </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="HTTPIntegration.current_session"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.HTTPIntegration.current_session">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">current_session</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;HTTPIntegration&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get or create an HTTP session for this context.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">Meta</span><span class="o">.</span><span class="n">service_name</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">g</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_session</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div></div>
+
+
+<div class="viewcode-block" id="raise_for_http_status"><a class="viewcode-back" href="../../../../arxiv/arxiv.integration.api.service.html#arxiv.integration.api.service.raise_for_http_status">[docs]</a><span class="k">def</span> <span class="nf">raise_for_http_status</span><span class="p">(</span><span class="n">status_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                          <span class="n">resp</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raise an exception based on an HTTP status code.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    status_code : int</span>
+<span class="sd">        HTTP status code.</span>
+<span class="sd">    resp : :class:`requests.Response`</span>
+<span class="sd">        If provided, passed to the exception.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    :class:`RequestFailed`</span>
+<span class="sd">        Or one of its children. See :class:`.exceptions`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">resp</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No response&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="n">status</span><span class="o">.</span><span class="n">INTERNAL_SERVER_ERROR</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RequestFailed</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Status: </span><span class="si">{resp.status_code}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">UNAUTHORIZED</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RequestUnauthorized</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Not authorized&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">FORBIDDEN</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">RequestForbidden</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Forbidden&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">status</span><span class="o">.</span><span class="n">NOT_FOUND</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">NotFound</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;No such resource: </span><span class="si">{resp.url}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="n">status</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">BadRequest</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Bad request: </span><span class="si">{resp.content}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">resp</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

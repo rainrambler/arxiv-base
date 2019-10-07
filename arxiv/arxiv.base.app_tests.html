@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.base.app_tests module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="arxiv.base.config module" href="arxiv.base.config.html" />
+    <link rel="prev" title="arxiv.base.alerts module" href="arxiv.base.alerts.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.base.app_tests">
+<span id="arxiv-base-app-tests-module"></span><h1>arxiv.base.app_tests module<a class="headerlink" href="#module-arxiv.base.app_tests" title="Permalink to this headline">¶</a></h1>
+<p>These tests check for possible problems with apps that use this package.</p>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>You can import all of the tests in this module, and run them with the built in
+test runner. E.g.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># my_app_tests.py</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="kn">from</span> <span class="nn">my_app.factory</span> <span class="kn">import</span> <span class="n">create_web_app</span>
+<span class="kn">from</span> <span class="nn">arxiv.base.app_tests</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_web_app</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+        <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>And run with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipenv run python my_app_tests.py
+</pre></div>
+</div>
+<dl class="class">
+<dt id="arxiv.base.app_tests.TestConfig">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.base.app_tests.</code><code class="sig-name descname">TestConfig</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/app_tests.html#TestConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.app_tests.TestConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Look for common problems with the app config.</p>
+<dl class="method">
+<dt id="arxiv.base.app_tests.TestConfig.test_server_name">
+<code class="sig-name descname">test_server_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/app_tests.html#TestConfig.test_server_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.app_tests.TestConfig.test_server_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>SERVER_NAME should be None (or unset).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="arxiv.base.app_tests.TestStaticFiles">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.base.app_tests.</code><code class="sig-name descname">TestStaticFiles</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/app_tests.html#TestStaticFiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.app_tests.TestStaticFiles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Make sure that static files are configured safely on an app.</p>
+<dl class="method">
+<dt id="arxiv.base.app_tests.TestStaticFiles.test_static_url_paths">
+<code class="sig-name descname">test_static_url_paths</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/app_tests.html#TestStaticFiles.test_static_url_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.app_tests.TestStaticFiles.test_static_url_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for possible issues with the static URL path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.base.html">arxiv.base package</a><ul>
+      <li>Previous: <a href="arxiv.base.alerts.html" title="previous chapter">arxiv.base.alerts module</a></li>
+      <li>Next: <a href="arxiv.base.config.html" title="next chapter">arxiv.base.config module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.base.app_tests.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

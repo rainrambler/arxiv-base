@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.base.app_tests &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for arxiv.base.app_tests</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">These tests check for possible problems with apps that use this package.</span>
+
+<span class="sd">Usage</span>
+<span class="sd">-----</span>
+<span class="sd">You can import all of the tests in this module, and run them with the built in</span>
+<span class="sd">test runner. E.g.</span>
+
+<span class="sd">.. code-block:: python</span>
+
+<span class="sd">   # my_app_tests.py</span>
+<span class="sd">   import unittest</span>
+
+<span class="sd">   from my_app.factory import create_web_app</span>
+<span class="sd">   from arxiv.base.app_tests import *</span>
+
+<span class="sd">   app = create_web_app()</span>
+
+<span class="sd">   if __name__ == &#39;__main__&#39;:</span>
+<span class="sd">       with app.app_context():</span>
+<span class="sd">           unittest.main()</span>
+
+
+<span class="sd">And run with:</span>
+
+<span class="sd">.. code-block:: bash</span>
+
+<span class="sd">   pipenv run python my_app_tests.py</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">current_app</span>
+<span class="kn">from</span> <span class="nn">unittest</span> <span class="k">import</span> <span class="n">TestCase</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">config</span>
+
+
+<div class="viewcode-block" id="TestConfig"><a class="viewcode-back" href="../../../arxiv/arxiv.base.app_tests.html#arxiv.base.app_tests.TestConfig">[docs]</a><span class="k">class</span> <span class="nc">TestConfig</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Look for common problems with the app config.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestConfig.test_server_name"><a class="viewcode-back" href="../../../arxiv/arxiv.base.app_tests.html#arxiv.base.app_tests.TestConfig.test_server_name">[docs]</a>    <span class="k">def</span> <span class="nf">test_server_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;SERVER_NAME should be None (or unset).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNone</span><span class="p">(</span><span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;SERVER_NAME&#39;</span><span class="p">),</span>
+                          <span class="s2">&quot;SERVER_NAME should be None (or unset)&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TestStaticFiles"><a class="viewcode-back" href="../../../arxiv/arxiv.base.app_tests.html#arxiv.base.app_tests.TestStaticFiles">[docs]</a><span class="k">class</span> <span class="nc">TestStaticFiles</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure that static files are configured safely on an app.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TestStaticFiles.test_static_url_paths"><a class="viewcode-back" href="../../../arxiv/arxiv.base.app_tests.html#arxiv.base.app_tests.TestStaticFiles.test_static_url_paths">[docs]</a>    <span class="k">def</span> <span class="nf">test_static_url_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check for possible issues with the static URL path.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">current_app</span><span class="o">.</span><span class="n">static_url_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/static&#39;</span><span class="p">),</span>
+                        <span class="s2">&quot;The static url path for the app should start with&quot;</span>
+                        <span class="s2">&quot; /static&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+            <span class="n">f</span><span class="s1">&#39;/</span><span class="si">{current_app.name}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">current_app</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+            <span class="n">f</span><span class="s2">&quot;The static_url_path should include the name of the app&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+            <span class="n">f</span><span class="s1">&#39;/{current_app.config.get(&quot;APP_VERSION&quot;)}&#39;</span><span class="p">,</span>
+            <span class="n">current_app</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+            <span class="n">f</span><span class="s2">&quot;The static_url_path should include the version of the app&quot;</span>
+            <span class="s2">&quot; (config.APP_VERSION)&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">blueprint</span> <span class="ow">in</span> <span class="n">current_app</span><span class="o">.</span><span class="n">blueprints</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;base&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span>
+                    <span class="n">blueprint</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+                    <span class="n">f</span><span class="s2">&quot;/static/base/</span><span class="si">{config.BASE_VERSION}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;The static URL for base should be independent of the&quot;</span>
+                    <span class="s2">&quot; app static URL path, and should be based on the&quot;</span>
+                    <span class="s2">&quot; version of the arxiv.base package.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertIsNotNone</span><span class="p">(</span>
+                    <span class="n">blueprint</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+                    <span class="n">f</span><span class="s2">&quot;The static_url_path should be set on blueprint `</span><span class="si">{key}</span><span class="s2">`&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                    <span class="n">current_app</span><span class="o">.</span><span class="n">static_url_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;/static&#39;</span><span class="p">),</span>
+                    <span class="s2">&quot;The static url path for the app should start with /static&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">&#39;/</span><span class="si">{current_app.name}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+                    <span class="n">f</span><span class="s2">&quot;The static_url_path should include the name of the app&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">&#39;/{current_app.config.get(&quot;APP_VERSION&quot;)}&#39;</span><span class="p">,</span>
+                    <span class="n">blueprint</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+                    <span class="n">f</span><span class="s2">&quot;The static_url_path should include the version of the&quot;</span>
+                    <span class="s2">&quot; app (config.APP_VERSION)&quot;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">blueprint</span><span class="o">.</span><span class="n">static_url_path</span><span class="p">,</span>
+                    <span class="n">f</span><span class="s2">&quot;The static_url_path for blueprint `</span><span class="si">{key}</span><span class="s2">` should include&quot;</span>
+                    <span class="s2">&quot; the name of the blueprint&quot;</span>
+                <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../base.html">arxiv.base</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>arxiv.base.middleware.base module &#8212; arXiv base 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +12,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="arxiv.base.middleware.request_logs module" href="arxiv.base.middleware.request_logs.html" />
@@ -40,21 +38,103 @@
 <p>Provides base classes for WSGI middlewares.</p>
 <dl class="class">
 <dt id="arxiv.base.middleware.base.BaseMiddleware">
-<em class="property">class </em><code class="descclassname">arxiv.base.middleware.base.</code><code class="descname">BaseMiddleware</code><span class="sig-paren">(</span><em>app</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#BaseMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.base.middleware.base.</code><code class="sig-name descname">BaseMiddleware</code><span class="sig-paren">(</span><em class="sig-param">wsgi_app</em>, <em class="sig-param">config={}</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#BaseMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for WSGI middlewares.</p>
-<p>Child classes should implement one or both of:</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">before(environ:</span> <span class="pre">dict,</span> <span class="pre">start_response:</span> <span class="pre">Callable)</span> <span class="pre">-&gt;</span> <span class="pre">Tuple[dict,</span> <span class="pre">Callable]</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">after(response:</span> <span class="pre">Iterable)</span> <span class="pre">-&gt;</span> <span class="pre">Iterable</span></code></li>
-</ul>
-<dl class="attribute">
-<dt id="arxiv.base.middleware.base.BaseMiddleware.wsgi_app">
-<code class="descname">wsgi_app</code><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware.wsgi_app" title="Permalink to this definition">¶</a></dt>
-<dd><p>Refer to the current instance of this class.</p>
-<p>This is here for consistency with the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code> interface.</p>
+<p>Child classes should override <code class="xref py py-func docutils literal notranslate"><span class="pre">before()</span></code> and/or <code class="xref py py-func docutils literal notranslate"><span class="pre">after()</span></code>.</p>
+<dl class="method">
+<dt id="arxiv.base.middleware.base.BaseMiddleware.after">
+<code class="sig-name descname">after</code><span class="sig-paren">(</span><em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#BaseMiddleware.after"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware.after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Post-process a WSGI response. To be overridden by a child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>response</strong> (<em>iterable</em>) – The WSGI response.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The WSGI response.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>iterable</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Iterable" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[+T_co]</p>
+</dd>
+</dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="arxiv.base.middleware.base.BaseMiddleware.before">
+<code class="sig-name descname">before</code><span class="sig-paren">(</span><em class="sig-param">environ</em>, <em class="sig-param">start_response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#BaseMiddleware.before"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware.before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process a WSGI request. To be overridden by a child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>environ</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – WSGI request environ.</p></li>
+<li><p><strong>start</strong> (<em>callable</em>) – Callable used to begin the HTTP response.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>dict</em> – WSGI request environ.</p></li>
+<li><p><em>callable</em> – Callable used to begin the HTTP response.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Tuple" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.base.middleware.base.BaseMiddleware.wsgi_app">
+<em class="property">property </em><code class="sig-name descname">wsgi_app</code><a class="headerlink" href="#arxiv.base.middleware.base.BaseMiddleware.wsgi_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refer to the current instance of this class.</p>
+<p>This is here for consistency with the <code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code> interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>], <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Iterable" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[+T_co]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="arxiv.base.middleware.base.IWSGIMiddleware">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.base.middleware.base.</code><code class="sig-name descname">IWSGIMiddleware</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#IWSGIMiddleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.IWSGIMiddleware" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing_extensions.Protocol</span></code></p>
+<p>Defines a minimal class that can be used as a middleware.</p>
+<dl class="method">
+<dt id="arxiv.base.middleware.base.IWSGIMiddleware.wsgi_app">
+<em class="property">property </em><code class="sig-name descname">wsgi_app</code><a class="headerlink" href="#arxiv.base.middleware.base.IWSGIMiddleware.wsgi_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Offer a <code class="docutils literal notranslate"><span class="pre">wsgi_app</span></code> property, per <code class="xref py py-class docutils literal notranslate"><span class="pre">Flask</span></code> behavior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>], <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Iterable" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[+T_co]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="arxiv.base.middleware.base.IWSGIMiddlewareFactory">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.base.middleware.base.</code><code class="sig-name descname">IWSGIMiddlewareFactory</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/base/middleware/base.html#IWSGIMiddlewareFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.base.middleware.base.IWSGIMiddlewareFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">typing_extensions.Protocol</span></code></p>
+<p>Defines a minimal WSGI middleware factory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="arxiv.base.middleware.base.WSGIRequest">
+<code class="sig-prename descclassname">arxiv.base.middleware.base.</code><code class="sig-name descname">WSGIRequest</code><a class="headerlink" href="#arxiv.base.middleware.base.WSGIRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Tuple</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="arxiv.base.middleware.base.WSGIResponse">
+<code class="sig-prename descclassname">arxiv.base.middleware.base.</code><code class="sig-name descname">WSGIResponse</code><a class="headerlink" href="#arxiv.base.middleware.base.WSGIResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Iterable" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.Iterable</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -82,12 +162,15 @@
 <li class="toctree-l2 current"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -106,13 +189,11 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -125,8 +206,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/arxiv/arxiv.base.middleware.base.rst.txt"

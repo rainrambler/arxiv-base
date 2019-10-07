@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.integration.api.service module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="arxiv.integration.kinesis package" href="arxiv.integration.kinesis.html" />
+    <link rel="prev" title="arxiv.integration.api.exceptions module" href="arxiv.integration.api.exceptions.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.integration.api.service">
+<span id="arxiv-integration-api-service-module"></span><h1>arxiv.integration.api.service module<a class="headerlink" href="#module-arxiv.integration.api.service" title="Permalink to this headline">¶</a></h1>
+<p>Provides a base class for HTTP API integrations.</p>
+<p>The goal of this module is to handle boilerplate connection and request
+handling that is invariant (or nearly so) among service integration modules
+that target HTTP APIs.</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<p>Make retry parameters easier to configure.</p>
+</div>
+<div class="section" id="specific-goals">
+<h2>Specific goals<a class="headerlink" href="#specific-goals" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Handle verifying the response status code, and raise appropriate and
+semantically meaningful exceptions.</p></li>
+<li><p>Handle setting up a persistent HTTP session to cut down on overhead.</p></li>
+<li><p>Provide basic retry functionality.</p></li>
+<li><p>Handle binding a service instance (with its persistent session) to the
+Flask application context.</p></li>
+</ul>
+<dl class="class">
+<dt id="arxiv.integration.api.service.HTTPIntegration">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.integration.api.service.</code><code class="sig-name descname">HTTPIntegration</code><span class="sig-paren">(</span><em class="sig-param">endpoint</em>, <em class="sig-param">verify=True</em>, <em class="sig-param">headers={}</em>, <em class="sig-param">**extra</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Integrate with a service over HTTP.</p>
+<p>Provides binding to the application context, so that connections can be
+re-used.</p>
+<p>To implement an HTTP API service integration, define a class that inherits
+from <a class="reference internal" href="#arxiv.integration.api.service.HTTPIntegration" title="arxiv.integration.api.service.HTTPIntegration"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPIntegration</span></code></a>. At minimum, it should include an inner
+class called <code class="docutils literal notranslate"><span class="pre">Meta</span></code> with the attribute <code class="docutils literal notranslate"><span class="pre">service_name</span></code>; this is used to
+identify the configuration parameters for the service. For example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyCoolIntegration</span><span class="p">(</span><span class="n">HTTPIntegration</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">service_name</span> <span class="o">=</span> <span class="s2">&quot;cool_beans&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_something</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">anything</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="s2">&quot;get&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;/thing/{anything}&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+</pre></div>
+</div>
+<p>and in your <code class="docutils literal notranslate"><span class="pre">config.py</span></code>, include:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">COOL_BEANS_ENDPOINT</span> <span class="o">=</span> <span class="s2">&quot;http://thecool.beans.arxiv.org:9876&quot;</span>
+<span class="n">COOL_BEANS_VERIFY</span> <span class="o">=</span> <span class="bp">False</span>   <span class="c1"># (or True, if you are using SSL)</span>
+</pre></div>
+</div>
+<p>Thanks to <a class="reference internal" href="arxiv.integration.meta.html#arxiv.integration.meta.MetaIntegration" title="arxiv.integration.meta.MetaIntegration"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.meta.MetaIntegration</span></code></a>, you should be
+able to use this integration in your app like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">my.cool.services</span> <span class="kn">import</span> <span class="n">MyCoolIntegration</span>
+<span class="kn">from</span> <span class="nn">arxiv.users</span> <span class="kn">import</span> <span class="n">auth</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">MyCoolIntegration</span><span class="o">.</span><span class="n">init_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+<span class="n">auth</span><span class="o">.</span><span class="n">Auth</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/foo&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+    <span class="n">mci</span> <span class="o">=</span> <span class="n">MyCoolIntegration</span><span class="o">.</span><span class="n">current_session</span><span class="p">()</span>
+    <span class="n">mci</span><span class="o">.</span><span class="n">get_something</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">])</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Any additional parameters in your app config that start with the
+<code class="docutils literal notranslate"><span class="pre">service_name</span></code> in upper case will be passed in as kwargs to the
+constructor. By default, these are stored on <code class="docutils literal notranslate"><span class="pre">._extra</span></code> for internal
+use.</p>
+<dl class="class">
+<dt id="arxiv.integration.api.service.HTTPIntegration.Meta">
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Additional info about this class.</p>
+<p>This should be overridden by any child class.</p>
+<dl class="attribute">
+<dt id="arxiv.integration.api.service.HTTPIntegration.Meta.service_name">
+<code class="sig-name descname">service_name</code><em class="property"> = 'base'</em><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.Meta.service_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.current_session">
+<em class="property">classmethod </em><code class="sig-name descname">current_session</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.current_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.current_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or create an HTTP session for this context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arxiv.integration.api.service.HTTPIntegration" title="arxiv.integration.api.service.HTTPIntegration"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPIntegration</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.get_session">
+<em class="property">classmethod </em><code class="sig-name descname">get_session</code><span class="sig-paren">(</span><em class="sig-param">app=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.get_session"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.get_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a new session with the service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#arxiv.integration.api.service.HTTPIntegration" title="arxiv.integration.api.service.HTTPIntegration"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPIntegration</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.get_status">
+<code class="sig-name descname">get_status</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.get_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of the service.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.init_app">
+<em class="property">classmethod </em><code class="sig-name descname">init_app</code><span class="sig-paren">(</span><em class="sig-param">app</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.init_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.init_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set default configuration parameters for an application instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.json">
+<code class="sig-name descname">json</code><span class="sig-paren">(</span><em class="sig-param">method, path, token=None, expected_code=[&lt;HTTPStatus.OK: 200&gt;], **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform an HTTP request to a JSON endpoint, and handle any exceptions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>dict</em> – Response content.</p></li>
+<li><p><em>int</em> – HTTP status code.</p></li>
+<li><p><em>dict</em> – Response headers.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Tuple" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.MutableMapping" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></a>[~KT, ~VT]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.api.service.HTTPIntegration.request">
+<code class="sig-name descname">request</code><span class="sig-paren">(</span><em class="sig-param">method, path, token=None, expected_code=[&lt;HTTPStatus.OK: 200&gt;], allow_2xx_redirects=True, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#HTTPIntegration.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.HTTPIntegration.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make an HTTP request with error/code handling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.integration.api.service.raise_for_http_status">
+<code class="sig-prename descclassname">arxiv.integration.api.service.</code><code class="sig-name descname">raise_for_http_status</code><span class="sig-paren">(</span><em class="sig-param">status_code</em>, <em class="sig-param">resp=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/service.html#raise_for_http_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.service.raise_for_http_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise an exception based on an HTTP status code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>status_code</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – HTTP status code.</p></li>
+<li><p><strong>resp</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">requests.Response</span></code>) – If provided, passed to the exception.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="arxiv.integration.api.exceptions.html#arxiv.integration.api.exceptions.RequestFailed" title="arxiv.integration.api.exceptions.RequestFailed"><strong>RequestFailed</strong></a> – Or one of its children. See <code class="xref py py-class docutils literal notranslate"><span class="pre">exceptions</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.integration.html">arxiv.integration package</a><ul>
+  <li><a href="arxiv.integration.api.html">arxiv.integration.api package</a><ul>
+      <li>Previous: <a href="arxiv.integration.api.exceptions.html" title="previous chapter">arxiv.integration.api.exceptions module</a></li>
+      <li>Next: <a href="arxiv.integration.kinesis.html" title="next chapter">arxiv.integration.kinesis package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.integration.api.service.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,2 +1,0 @@
-recursive-include arxiv/base/static/ *
-recursive-include arxiv/base/templates *

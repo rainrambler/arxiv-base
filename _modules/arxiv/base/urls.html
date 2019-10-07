@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>arxiv.base.urls &#8212; arXiv base 0.2 documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +12,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -80,65 +78,55 @@
 
 <span class="sd">This will build URLs with the ``https`` scheme by default. To use ``http``,</span>
 <span class="sd">set ``EXTERNAL_URL_SCHEME = &#39;http&#39;`` in your configuration.</span>
+
+
+<span class="sd">Danger! Memory leaks lurk here</span>
+<span class="sd">------------------------------</span>
+<span class="sd">Earlier versions of this module built Werkzeug routing machinery (Rules, Maps,</span>
+<span class="sd">etc) on the fly. This led to serious memory leaks. As of v0.15.6,</span>
+<span class="sd">:class:`.Base` uses :func:`register_external_urls` to set up external URL</span>
+<span class="sd">handling, which registers a single :class:`.MapAdapter` on a Flask app. This</span>
+<span class="sd">adapter is in turn used by :func:`external_url_handler` on demand.</span>
+
+<span class="sd">See ARXIVNG-2085.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">parse_qs</span>
 <span class="kn">from</span> <span class="nn">werkzeug.urls</span> <span class="k">import</span> <span class="n">url_encode</span><span class="p">,</span> <span class="n">url_parse</span><span class="p">,</span> <span class="n">url_unparse</span>
-<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="k">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">BuildError</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">current_app</span>
+<span class="kn">from</span> <span class="nn">werkzeug.routing</span> <span class="k">import</span> <span class="n">Map</span><span class="p">,</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">BuildError</span><span class="p">,</span> <span class="n">MapAdapter</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">Flask</span>
 
 <span class="kn">from</span> <span class="nn">arxiv.base.exceptions</span> <span class="k">import</span> <span class="n">ConfigurationError</span>
 <span class="kn">from</span> <span class="nn">arxiv.base.converter</span> <span class="k">import</span> <span class="n">ArXivConverter</span>
+<span class="kn">from</span> <span class="nn">arxiv.base</span> <span class="k">import</span> <span class="n">logging</span>
+<span class="kn">from</span> <span class="nn">arxiv.base</span> <span class="k">import</span> <span class="n">config</span> <span class="k">as</span> <span class="n">base_config</span>
+
+<span class="kn">from</span> <span class="nn">.clickthrough</span> <span class="k">import</span> <span class="n">clickthrough_url</span>
+<span class="kn">from</span> <span class="nn">.links</span> <span class="k">import</span> <span class="n">urlize</span><span class="p">,</span> <span class="n">urlizer</span><span class="p">,</span> <span class="n">url_for_doi</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="c1"># The module arxiv.base.config needs to be able to load its values from</span>
-<span class="c1"># environment variables, some of which are set by SetEnv directives in Apache.</span>
-<span class="c1"># Those variables are not set until application execution begins, which means</span>
-<span class="c1"># that if arxiv.base.config is imported beforehand its values will not be</span>
-<span class="c1"># correct.</span>
-<span class="k">def</span> <span class="nf">_get_base_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">arxiv.base</span> <span class="k">import</span> <span class="n">config</span>
-    <span class="k">return</span> <span class="n">config</span>
-
-
-<div class="viewcode-block" id="get_url_map"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.get_url_map">[docs]</a><span class="k">def</span> <span class="nf">get_url_map</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Map</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Build a :class:`werkzeug.routing.Map` from configured URLs.&quot;&quot;&quot;</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">_get_base_config</span><span class="p">()</span>
-
+<div class="viewcode-block" id="build_adapter"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.build_adapter">[docs]</a><span class="k">def</span> <span class="nf">build_adapter</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MapAdapter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Build a :class:`.MapAdapter` from configured URLs.&quot;&quot;&quot;</span>
     <span class="c1"># Get the base URLs (configured in this package).</span>
-    <span class="n">configured_urls</span> <span class="o">=</span> <span class="p">{</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">url</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">URLS</span><span class="p">}</span>
+    <span class="n">configured_urls</span> <span class="o">=</span> <span class="p">{</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">url</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">base_config</span><span class="o">.</span><span class="n">URLS</span><span class="p">}</span>
     <span class="c1"># Privilege ARXIV_URLs set on the application config.</span>
-    <span class="n">current_urls</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;URLS&#39;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">current_urls</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;URLS&#39;</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">if</span> <span class="n">current_urls</span><span class="p">:</span>
         <span class="n">configured_urls</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">url</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">url</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">current_urls</span><span class="p">})</span>
-
     <span class="n">url_map</span> <span class="o">=</span> <span class="n">Map</span><span class="p">([</span>
         <span class="n">Rule</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">build_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">configured_urls</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
     <span class="p">],</span> <span class="n">converters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arxiv&#39;</span><span class="p">:</span> <span class="n">ArXivConverter</span><span class="p">},</span> <span class="n">host_matching</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">url_map</span></div>
 
-
-<div class="viewcode-block" id="external_url_for"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.external_url_for">[docs]</a><span class="k">def</span> <span class="nf">external_url_for</span><span class="p">(</span><span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Like :flask`.url_for`, but builds external URLs based on the config.</span>
-
-<span class="sd">    This works by loading the configuration variable ``URLS`` from</span>
-<span class="sd">    :mod:`arxiv.base.config` and from the application on which the blueprint</span>
-<span class="sd">    has been registered, and registering the URL patterns described therein.</span>
-<span class="sd">    Preference is given to URLs defined on the current application. An attempt</span>
-<span class="sd">    is made to avoid adding URL rules for which identical patterns have already</span>
-<span class="sd">    been registered.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_external&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">url_map</span> <span class="o">=</span> <span class="n">get_url_map</span><span class="p">()</span>
-    <span class="n">scheme</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EXTERNAL_URL_SCHEME&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span>
-    <span class="n">host</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;BASE_SERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;arxiv.org&#39;</span><span class="p">)</span>
-    <span class="n">adapter</span> <span class="o">=</span> <span class="n">url_map</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">url_scheme</span><span class="o">=</span><span class="n">scheme</span><span class="p">)</span>
-    <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">force_external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">url</span></div>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EXTERNAL_URL_SCHEME&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span>
+    <span class="n">base_host</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;BASE_SERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;arxiv.org&#39;</span><span class="p">)</span>
+    <span class="n">adapter</span><span class="p">:</span> <span class="n">MapAdapter</span> <span class="o">=</span> <span class="n">url_map</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">base_host</span><span class="p">,</span> <span class="n">url_scheme</span><span class="o">=</span><span class="n">scheme</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">adapter</span></div>
 
 
 <div class="viewcode-block" id="external_url_handler"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.external_url_handler">[docs]</a><span class="k">def</span> <span class="nf">external_url_handler</span><span class="p">(</span><span class="n">err</span><span class="p">:</span> <span class="n">BuildError</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -146,11 +134,14 @@
 <span class="sd">    Attempt to handle failed URL building with :func:`external_url_for`.</span>
 
 <span class="sd">    This gets attached to a Flask application via the</span>
-<span class="sd">    :meth:`flask.Flask.url_build_error_handlers` hook.</span>
+<span class="sd">    :func:`flask.Flask.url_build_error_handlers` hook.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;_external&#39;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">external_url_for</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="o">**</span><span class="n">values</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">BuildError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">external_url_adapter</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span>
+                                                          <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span>
+                                                          <span class="n">force_external</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">BuildError</span><span class="p">:</span>
         <span class="c1"># Re-raise the original BuildError, in context of original traceback.</span>
         <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">tb</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">exc_value</span> <span class="ow">is</span> <span class="n">err</span><span class="p">:</span>
@@ -158,6 +149,30 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">err</span>
     <span class="k">return</span> <span class="n">url</span></div>
+
+
+<div class="viewcode-block" id="canonical_url"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.canonical_url">[docs]</a><span class="k">def</span> <span class="nf">canonical_url</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate the canonical URL for an arXiv identifier.</span>
+
+<span class="sd">    This can be done from just the ID because the category is only needed if it</span>
+<span class="sd">    is in the ID. id can be just the id or idv or cat/id or cat/idv.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: This should be better.</span>
+    <span class="c1"># There should probably be something like INTERNAL_URL_SCHEMA</span>
+    <span class="c1"># Also, /abs should probably be specified somewhere else</span>
+    <span class="c1"># like arxiv.base.canonical</span>
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EXTERNAL_URL_SCHEME&#39;</span><span class="p">,</span> <span class="s1">&#39;https&#39;</span><span class="p">)</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">current_app</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAIN_SERVER&#39;</span><span class="p">,</span> <span class="s1">&#39;arxiv.org&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">version</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{host}</span><span class="s1">/abs/</span><span class="si">{id}</span><span class="s1">v</span><span class="si">{version}</span><span class="s1">&#39;</span>
+    <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{host}</span><span class="s1">/abs/</span><span class="si">{id}</span><span class="s1">&#39;</span></div>
+
+
+<div class="viewcode-block" id="register_external_urls"><a class="viewcode-back" href="../../../arxiv/arxiv.base.urls.html#arxiv.base.urls.register_external_urls">[docs]</a><span class="k">def</span> <span class="nf">register_external_urls</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Register :func:`external_url_handler` on a Flask app.&quot;&quot;&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">external_url_adapter</span> <span class="o">=</span> <span class="n">build_adapter</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">url_build_error_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">external_url_handler</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -179,6 +194,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -193,13 +209,11 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -212,8 +226,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>arxiv.base.middleware.base &#8212; arXiv base 0.2 documentation</title>
     <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
@@ -14,7 +12,7 @@
     <script type="text/javascript" src="../../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
    
@@ -36,62 +34,141 @@
   <h1>Source code for arxiv.base.middleware.base</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Provides base classes for WSGI middlewares.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TypeVar</span>
-<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="k">import</span> <span class="n">Protocol</span>
 
 
-<div class="viewcode-block" id="BaseMiddleware"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.BaseMiddleware">[docs]</a><span class="k">class</span> <span class="nc">BaseMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="n">WSGIRequest</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The WSGI request.</span>
+
+<span class="sd">Comprised of an environ mapping and a callable for starting the response. See</span>
+<span class="sd">also `https://www.python.org/dev/peps/pep-0333/#the-start-response-callable`_.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">WSGIResponse</span> <span class="o">=</span> <span class="n">Iterable</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The iterable that generates a WSGI response.</span>
+
+<span class="sd">See also</span>
+<span class="sd">`https://www.python.org/dev/peps/pep-0333/#the-application-framework-side`_.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">IWSGIApp</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span> <span class="n">WSGIResponse</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="IWSGIMiddleware"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.IWSGIMiddleware">[docs]</a><span class="k">class</span> <span class="nc">IWSGIMiddleware</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a minimal class that can be used as a middleware.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wsgi_app</span><span class="p">:</span> <span class="n">IWSGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize with an WSGI app and an optional configuration.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WSGIResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Support the WSGI protocol.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IWSGIApp</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Offer a ``wsgi_app`` property, per :class:`.Flask` behavior.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="IWSGIMiddlewareFactory"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.IWSGIMiddlewareFactory">[docs]</a><span class="k">class</span> <span class="nc">IWSGIMiddlewareFactory</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Defines a minimal WSGI middleware factory.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">IWSGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n">IWSGIMiddleware</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Generate a :class:`.WSGIMiddleware`.&quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="BaseMiddleware"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.BaseMiddleware">[docs]</a><span class="k">class</span> <span class="nc">BaseMiddleware</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for WSGI middlewares.</span>
 
-<span class="sd">    Child classes should implement one or both of:</span>
-
-<span class="sd">    - ``before(environ: dict, start_response: Callable) -&gt; Tuple[dict, Callable]``</span>
-<span class="sd">    - ``after(response: Iterable) -&gt; Iterable``</span>
-
+<span class="sd">    Child classes should override :func:`.before` and/or :func:`.after`\.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Flask</span><span class="p">,</span> <span class="n">Callable</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wsgi_app</span><span class="p">:</span> <span class="n">IWSGIApp</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the app factory that this middleware wraps.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        app : :class:`.Flask` or callable</span>
+<span class="sd">        wsgi_app : callable</span>
 <span class="sd">            The application wrapped by this middleware. This might be an inner</span>
 <span class="sd">            middleware, or the original :class:`.Flask` app itself.</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            Application configuration.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">wsgi_app</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">start_response</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">:</span>
+<div class="viewcode-block" id="BaseMiddleware.before"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.BaseMiddleware.before">[docs]</a>    <span class="k">def</span> <span class="nf">before</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">start_response</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WSGIRequest</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pre-process a WSGI request. To be overridden by a child class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        environ : dict</span>
+<span class="sd">            WSGI request environ.</span>
+<span class="sd">        start : callable</span>
+<span class="sd">            Callable used to begin the HTTP response.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            WSGI request environ.</span>
+<span class="sd">        callable</span>
+<span class="sd">            Callable used to begin the HTTP response.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span></div>
+
+<div class="viewcode-block" id="BaseMiddleware.after"><a class="viewcode-back" href="../../../../arxiv/arxiv.base.middleware.base.html#arxiv.base.middleware.base.BaseMiddleware.after">[docs]</a>    <span class="k">def</span> <span class="nf">after</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">WSGIResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WSGIResponse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Post-process a WSGI response. To be overridden by a child class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        response : iterable</span>
+<span class="sd">            The WSGI response.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        iterable</span>
+<span class="sd">            The WSGI response.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">response</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WSGIResponse</span><span class="p">:</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handle a WSGI request.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        environ : dict</span>
 <span class="sd">            WSGI request environment.</span>
-<span class="sd">        start_response : function</span>
+<span class="sd">        start : function</span>
 <span class="sd">            Function used to begin the HTTP response. See</span>
-<span class="sd">            https://www.python.org/dev/peps/pep-0333/#the-start-response-callable</span>
+<span class="sd">            :const:`.WSGIRequest`\.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        iterable</span>
 <span class="sd">            Iterable that generates the HTTP response. See</span>
-<span class="sd">            https://www.python.org/dev/peps/pep-0333/#the-application-framework-side</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;before&#39;</span><span class="p">):</span>
-            <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="n">response</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+<span class="sd">            :const:`.WSGIResponse`\.</span>
 
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;after&#39;</span><span class="p">):</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>       <span class="c1"># type: ignore</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="n">response</span><span class="p">:</span> <span class="n">WSGIResponse</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">after</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">wsgi_app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IWSGIApp</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Refer to the current instance of this class.</span>
 
@@ -119,6 +196,7 @@
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -135,13 +213,11 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -154,8 +230,8 @@
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

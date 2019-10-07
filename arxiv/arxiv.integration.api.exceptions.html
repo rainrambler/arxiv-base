@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.integration.api.exceptions module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="arxiv.integration.api.service module" href="arxiv.integration.api.service.html" />
+    <link rel="prev" title="arxiv.integration.api package" href="arxiv.integration.api.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.integration.api.exceptions">
+<span id="arxiv-integration-api-exceptions-module"></span><h1>arxiv.integration.api.exceptions module<a class="headerlink" href="#module-arxiv.integration.api.exceptions" title="Permalink to this headline">¶</a></h1>
+<p>Exceptions for HTTP API integrations.</p>
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.BadRequest">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">BadRequest</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#BadRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.BadRequest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.RequestFailed" title="arxiv.integration.api.exceptions.RequestFailed"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.RequestFailed</span></code></a></p>
+<p>The request was malformed or otherwise improper.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.BadResponse">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">BadResponse</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#BadResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.BadResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.RequestFailed" title="arxiv.integration.api.exceptions.RequestFailed"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.RequestFailed</span></code></a></p>
+<p>The response from the file management service was malformed.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.ConnectionFailed">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">ConnectionFailed</code><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#ConnectionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.ConnectionFailed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#OSError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OSError</span></code></a></p>
+<p>Could not connect to the file management service.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.NotFound">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">NotFound</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#NotFound"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.NotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.BadRequest" title="arxiv.integration.api.exceptions.BadRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.BadRequest</span></code></a></p>
+<p>The referenced upload does not exist.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.Oversize">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">Oversize</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#Oversize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.Oversize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.BadRequest" title="arxiv.integration.api.exceptions.BadRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.BadRequest</span></code></a></p>
+<p>The upload was too large.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.RequestFailed">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">RequestFailed</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#RequestFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.RequestFailed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#OSError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OSError</span></code></a></p>
+<p>The file management service returned an unexpected status code.</p>
+<dl class="method">
+<dt id="arxiv.integration.api.exceptions.RequestFailed.status_code">
+<em class="property">property </em><code class="sig-name descname">status_code</code><a class="headerlink" href="#arxiv.integration.api.exceptions.RequestFailed.status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the code from the response originating the exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.RequestForbidden">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">RequestForbidden</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#RequestForbidden"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.RequestForbidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.RequestFailed" title="arxiv.integration.api.exceptions.RequestFailed"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.RequestFailed</span></code></a></p>
+<p>Client/user is not allowed to perform this request.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.RequestUnauthorized">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">RequestUnauthorized</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#RequestUnauthorized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.RequestUnauthorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.RequestFailed" title="arxiv.integration.api.exceptions.RequestFailed"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.RequestFailed</span></code></a></p>
+<p>Client/user is not authenticated.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.api.exceptions.SecurityException">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.api.exceptions.</code><code class="sig-name descname">SecurityException</code><a class="reference internal" href="../_modules/arxiv/integration/api/exceptions.html#SecurityException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.api.exceptions.SecurityException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#arxiv.integration.api.exceptions.ConnectionFailed" title="arxiv.integration.api.exceptions.ConnectionFailed"><code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.integration.api.exceptions.ConnectionFailed</span></code></a></p>
+<p>Raised when SSL connection fails.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.integration.html">arxiv.integration package</a><ul>
+  <li><a href="arxiv.integration.api.html">arxiv.integration.api package</a><ul>
+      <li>Previous: <a href="arxiv.integration.api.html" title="previous chapter">arxiv.integration.api package</a></li>
+      <li>Next: <a href="arxiv.integration.api.service.html" title="next chapter">arxiv.integration.api.service module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.integration.api.exceptions.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

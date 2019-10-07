@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.util.authors module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="arxiv.util.schema module" href="arxiv.util.schema.html" />
+    <link rel="prev" title="arxiv.util package" href="arxiv.util.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.util.authors">
+<span id="arxiv-util-authors-module"></span><h1>arxiv.util.authors module<a class="headerlink" href="#module-arxiv.util.authors" title="Permalink to this headline">¶</a></h1>
+<p>Parse Authors lines to extract author and affiliation data.</p>
+<dl class="data">
+<dt id="arxiv.util.authors.PREFIX_MATCH">
+<code class="sig-prename descclassname">arxiv.util.authors.</code><code class="sig-name descname">PREFIX_MATCH</code><em class="property"> = 'van|der|de|la|von|del|della|da|mac|ter|dem|di|vaziri'</em><a class="headerlink" href="#arxiv.util.authors.PREFIX_MATCH" title="Permalink to this definition">¶</a></dt>
+<dd><p>line in the current arXiv abstract
+file and returns a structured set of data:</p>
+<blockquote>
+<div><dl>
+<dt>author_list_ptr = [</dt><dd><p>[ author1_keyname, author1_firstnames, author1_suffix, affil1, affil2 ] ,
+[ author2_keyname, author2_firstnames, author1_suffix, affil1 ] ,
+[ author3_keyname, author3_firstnames, author1_suffix ]</p>
+<blockquote>
+<div><p>]</p>
+</div></blockquote>
+</dd>
+</dl>
+</div></blockquote>
+<p>Abstracted from Dienst software for OAI1 and other uses. This
+routine should just go away when a better metadata structure is
+adopted that deals with names and affiliations properly.</p>
+<p>Must remember that there is at least one person one the archive
+who has only one name, this should clearly be considered the key name.</p>
+<dl class="simple">
+<dt>Code originally written by Christina Scovel, Simeon Warner Dec99/Jan00</dt><dd><p>2000-10-16 - separated.
+2000-12-07 - added support for suffix
+2003-02-14 - get surname prefixes from arXiv::Filters::Index [Simeon]
+2007-10-01 - created test script, some tidying [Simeon]
+2018-05-25 - Translated from Perl to Python [Brian C.]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Takes data from an Author</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.util.authors.parse_author_affil">
+<code class="sig-prename descclassname">arxiv.util.authors.</code><code class="sig-name descname">parse_author_affil</code><span class="sig-paren">(</span><em class="sig-param">authors</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/util/authors.html#parse_author_affil"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.util.authors.parse_author_affil" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse author line and returns an list of author and affiliation data.</p>
+<p>The list for each author will have at least three elements for
+keyname, firstname(s) and suffix. The keyname will always have content
+but the other strings might be empty strings if there is no firstname
+or suffix. Any additional elements after the first three are affiliations,
+there may be zero or more.</p>
+<p>Handling of prefix “XX collaboration” etc. is duplicated here and in
+arXiv::HTML::AuthorLink – it shouldn’t be. Likely should just be here.</p>
+<p>This routine is just a wrapper around the two parts that first split
+the authors line into parts, and then back propagate the affiliations.
+The first part is to be used along for display where we do not want
+to back propagate affiliation information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>authors</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – string of authors from abs file or similar</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.List" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.List" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+<p>Returns a structured set of data:
+author_list_ptr = [</p>
+<blockquote>
+<div><p>[ author1_keyname, author1_firstnames, author1_suffix, affil1, affil2 ],
+[ author2_keyname, author2_firstnames, author1_suffix, affil1 ] ,
+[ author3_keyname, author3_firstnames, author1_suffix ]</p>
+</div></blockquote>
+<p>]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.util.authors.parse_author_affil_utf">
+<code class="sig-prename descclassname">arxiv.util.authors.</code><code class="sig-name descname">parse_author_affil_utf</code><span class="sig-paren">(</span><em class="sig-param">authors</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/util/authors.html#parse_author_affil_utf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.util.authors.parse_author_affil_utf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call parse_author_affil() and do TeX to UTF conversion.</p>
+<p>Output structure is the same but should be in UTF and not TeX.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.List" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[~T]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.util.authors.split_authors">
+<code class="sig-prename descclassname">arxiv.util.authors.</code><code class="sig-name descname">split_authors</code><span class="sig-paren">(</span><em class="sig-param">authors</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/util/authors.html#split_authors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.util.authors.split_authors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split author string into authors entity lists.</p>
+<p>Take an author line as a string and return a reference to a list of the
+different name and affiliation blocks. While this does normalize spacing
+and ‘and’, it is a key feature that the set of strings returned can be
+concatenated to reproduce the original authors line. This code thus
+provides a very graceful degredation for badly formatted authors lines, as
+the text at least shows up.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.List" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[~T]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.util.html">arxiv.util package</a><ul>
+      <li>Previous: <a href="arxiv.util.html" title="previous chapter">arxiv.util package</a></li>
+      <li>Next: <a href="arxiv.util.schema.html" title="next chapter">arxiv.util.schema module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.util.authors.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

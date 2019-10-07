@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.integration.kinesis.consumer.tests module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.integration.kinesis.consumer.tests">
+<span id="arxiv-integration-kinesis-consumer-tests-module"></span><h1>arxiv.integration.kinesis.consumer.tests module<a class="headerlink" href="#module-arxiv.integration.kinesis.consumer.tests" title="Permalink to this headline">¶</a></h1>
+<p>Tests for <a class="reference internal" href="arxiv.base.agent.html#arxiv.base.agent.BaseConsumer" title="arxiv.base.agent.BaseConsumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsumer</span></code></a>.</p>
+<dl class="class">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.tests.</code><code class="sig-name descname">TestBaseConsumer</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Test <a class="reference internal" href="arxiv.base.agent.html#arxiv.base.agent.BaseConsumer" title="arxiv.base.agent.BaseConsumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsumer</span></code></a> behavior and public methods.</p>
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a mock checkpointer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_go">
+<code class="sig-name descname">test_go</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_go"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_go" title="Permalink to this definition">¶</a></dt>
+<dd><p>On go, consumer should wait for stream to be available.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_go_stream_not_available">
+<code class="sig-name descname">test_go_stream_not_available</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_go_stream_not_available"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_go_stream_not_available" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the stream is not available, should raise an exception.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_iteration">
+<code class="sig-name descname">test_iteration</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_iteration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_iteration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test iteration behavior.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_process_records_until_shard_closes">
+<code class="sig-name descname">test_process_records_until_shard_closes</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_process_records_until_shard_closes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_process_records_until_shard_closes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should call GetRecords until no next iterator is available.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_process_records_with_clienterror">
+<code class="sig-name descname">test_process_records_with_clienterror</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_process_records_with_clienterror"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_process_records_with_clienterror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should try to checkpoint before exiting.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_position">
+<code class="sig-name descname">test_start_from_position</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_start_from_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consumer is initialized with start_type ‘AT_TIMESTAMP’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_timestamp">
+<code class="sig-name descname">test_start_from_timestamp</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_start_from_timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consumer is initialized with start_type ‘AT_TIMESTAMP’.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_trim_horizon">
+<code class="sig-name descname">test_start_from_trim_horizon</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestBaseConsumer.test_start_from_trim_horizon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestBaseConsumer.test_start_from_trim_horizon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Consumer is initialized with start_type ‘AT_TIMESTAMP’.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestProcessStream">
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.tests.</code><code class="sig-name descname">TestProcessStream</code><span class="sig-paren">(</span><em class="sig-param">methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestProcessStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestProcessStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Tests for <a class="reference internal" href="arxiv.base.agent.html#arxiv.base.agent.process_stream" title="arxiv.base.agent.process_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_stream()</span></code></a>.</p>
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestProcessStream.setUp">
+<code class="sig-name descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestProcessStream.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestProcessStream.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a testing config.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestProcessStream.test_process_stream">
+<code class="sig-name descname">test_process_stream</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestProcessStream.test_process_stream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestProcessStream.test_process_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run <a class="reference internal" href="arxiv.base.agent.html#arxiv.base.agent.process_stream" title="arxiv.base.agent.process_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_stream()</span></code></a> with a vanilla config.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="arxiv.integration.kinesis.consumer.tests.TestProcessStream.test_restart_processing">
+<code class="sig-name descname">test_restart_processing</code><span class="sig-paren">(</span><em class="sig-param">mock_session_factory</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/tests.html#TestProcessStream.test_restart_processing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.tests.TestProcessStream.test_restart_processing" title="Permalink to this definition">¶</a></dt>
+<dd><p>The record processor raises <a class="reference internal" href="arxiv.integration.kinesis.consumer.exceptions.html#arxiv.integration.kinesis.consumer.exceptions.RestartProcessing" title="arxiv.integration.kinesis.consumer.exceptions.RestartProcessing"><code class="xref py py-class docutils literal notranslate"><span class="pre">RestartProcessing</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.integration.kinesis.consumer.tests.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

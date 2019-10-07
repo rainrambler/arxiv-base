@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>arxiv.forms.csrf module &#8212; arXiv base 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,10 +12,10 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="arxiv.forms.tests module" href="arxiv.forms.tests.html" />
+    <link rel="next" title="arxiv.identifier package" href="arxiv.identifier.html" />
     <link rel="prev" title="arxiv.forms package" href="arxiv.forms.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -41,17 +39,17 @@
 <p>To protect a form, inherit from <a class="reference internal" href="#arxiv.forms.csrf.CSRFForm" title="arxiv.forms.csrf.CSRFForm"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFForm</span></code></a>. When the form is handled,
 this class expects that:</p>
 <ul class="simple">
-<li>There is an active <code class="xref py py-class docutils literal notranslate"><span class="pre">flask.Request</span></code>.</li>
-<li>The object <code class="docutils literal notranslate"><span class="pre">flask.request.session</span></code> exists, and has a <code class="docutils literal notranslate"><span class="pre">str</span></code> attribute
+<li><p>There is an active <code class="xref py py-class docutils literal notranslate"><span class="pre">flask.Request</span></code>.</p></li>
+<li><p>The object <code class="docutils literal notranslate"><span class="pre">flask.request.session</span></code> exists, and has a <code class="docutils literal notranslate"><span class="pre">str</span></code> attribute
 <code class="docutils literal notranslate"><span class="pre">nonce</span></code>. See <code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.users.domain.Session</span></code> and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.users.auth.Auth</span></code>.</li>
-<li>A parameter called <code class="docutils literal notranslate"><span class="pre">CSRF_SECRET</span></code> is set in the application configuration.</li>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">arxiv.users.auth.Auth</span></code>.</p></li>
+<li><p>A parameter called <code class="docutils literal notranslate"><span class="pre">CSRF_SECRET</span></code> is set in the application configuration.</p></li>
 </ul>
 <p>Here’s an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">from</span> <span class="nn">werkzeug</span> <span class="kn">import</span> <span class="n">MultiDict</span>
 <span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">StringField</span>
-<span class="kn">from</span> <span class="nn">arxiv</span> <span class="kn">import</span> <span class="n">status</span>
+<span class="kn">from</span> <span class="nn">http</span> <span class="kn">import</span> <span class="n">HTTPStatus</span> <span class="k">as</span> <span class="n">status</span>
 <span class="kn">from</span> <span class="nn">arxiv.forms</span> <span class="kn">import</span> <span class="n">csrf</span>
 
 <span class="n">ResponseData</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
@@ -70,13 +68,13 @@ this class expects that:</p>
         <span class="n">form</span> <span class="o">=</span> <span class="n">ProtectedForm</span><span class="p">(</span><span class="n">form_data</span><span class="p">)</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">}</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">form</span><span class="o">.</span><span class="n">validate</span><span class="p">():</span>    <span class="c1"># Checks the CSRF token, too!</span>
-            <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">,</span> <span class="n">headers</span>
+            <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">BAD_REQUEST</span><span class="p">,</span> <span class="n">headers</span>
 
         <span class="c1"># do something sensitive</span>
-        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_201_CREATED</span><span class="p">,</span> <span class="n">headers</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">status</span><span class="o">.</span><span class="n">CREATED</span><span class="p">,</span> <span class="n">headers</span>
 
     <span class="n">form</span> <span class="o">=</span> <span class="n">ProtectedForm</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">},</span> <span class="n">status</span><span class="o">.</span><span class="n">HTTP_200_OK</span><span class="p">,</span> <span class="n">headers</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;form&#39;</span><span class="p">:</span> <span class="n">form</span><span class="p">},</span> <span class="n">status</span><span class="o">.</span><span class="n">OK</span><span class="p">,</span> <span class="n">headers</span>
 </pre></div>
 </div>
 <p>And in your template:</p>
@@ -92,57 +90,56 @@ this class expects that:</p>
 </div>
 <dl class="class">
 <dt id="arxiv.forms.csrf.CSRFForm">
-<em class="property">class </em><code class="descclassname">arxiv.forms.csrf.</code><code class="descname">CSRFForm</code><span class="sig-paren">(</span><em>formdata=None</em>, <em>obj=None</em>, <em>prefix=''</em>, <em>data=None</em>, <em>meta=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#CSRFForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.forms.csrf.</code><code class="sig-name descname">CSRFForm</code><span class="sig-paren">(</span><em class="sig-param">formdata=None</em>, <em class="sig-param">obj=None</em>, <em class="sig-param">prefix=''</em>, <em class="sig-param">data=None</em>, <em class="sig-param">meta=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#CSRFForm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wtforms.form.Form</span></code></p>
 <p>Base form with support for CSRF protection.</p>
 <dl class="class">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta">
-<em class="property">class </em><code class="descname">Meta</code><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#CSRFForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Meta</code><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#CSRFForm.Meta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Set CSRF configuration.</p>
 <dl class="attribute">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf">
-<code class="descname">csrf</code><em class="property"> = True</em><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">csrf</code><em class="property"> = True</em><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf_class">
-<code class="descname">csrf_class</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_class" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">csrf_class</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_class" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#arxiv.forms.csrf.SessionCSRF" title="arxiv.forms.csrf.SessionCSRF"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionCSRF</span></code></a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf_context">
-<code class="descname">csrf_context</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_context" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">csrf_context</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_context" title="Permalink to this definition">¶</a></dt>
 <dd><p>Session information used to generate a CSRF token.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf_field_name">
-<code class="descname">csrf_field_name</code><em class="property"> = 'csrf_token'</em><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_field_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">csrf_field_name</code><em class="property"> = 'csrf_token'</em><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_field_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="method">
 <dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf_secret">
-<code class="descname">csrf_secret</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_secret" title="Permalink to this definition">¶</a></dt>
-<dd><p>The CSRF secret from the current application configuration.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<em class="property">property </em><code class="sig-name descname">csrf_secret</code><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>CSRF secret from the current application configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="arxiv.forms.csrf.CSRFForm.Meta.csrf_timeout">
+<code class="sig-name descname">csrf_timeout</code><em class="property"> = 1800</em><a class="headerlink" href="#arxiv.forms.csrf.CSRFForm.Meta.csrf_timeout" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -150,49 +147,40 @@ this class expects that:</p>
 
 <dl class="class">
 <dt id="arxiv.forms.csrf.SessionCSRF">
-<em class="property">class </em><code class="descclassname">arxiv.forms.csrf.</code><code class="descname">SessionCSRF</code><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">arxiv.forms.csrf.</code><code class="sig-name descname">SessionCSRF</code><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">wtforms.csrf.core.CSRF</span></code></p>
 <p>Session-based CSRF protection.</p>
 <dl class="method">
 <dt id="arxiv.forms.csrf.SessionCSRF.generate_csrf_token">
-<code class="descname">generate_csrf_token</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.generate_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.generate_csrf_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">generate_csrf_token</code><span class="sig-paren">(</span><em class="sig-param">field</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.generate_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.generate_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a new CSRF token using the CSRF secret and context.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="arxiv.forms.csrf.SessionCSRF.setup_form">
-<code class="descname">setup_form</code><span class="sig-paren">(</span><em>form</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.setup_form"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.setup_form" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setup_form</code><span class="sig-paren">(</span><em class="sig-param">form</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.setup_form"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.setup_form" title="Permalink to this definition">¶</a></dt>
 <dd><p>Grab the CSRF context and secret from the form.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="arxiv.forms.csrf.SessionCSRF.validate_csrf_token">
-<code class="descname">validate_csrf_token</code><span class="sig-paren">(</span><em>form</em>, <em>field</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.validate_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.validate_csrf_token" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">validate_csrf_token</code><span class="sig-paren">(</span><em class="sig-param">form</em>, <em class="sig-param">field</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/forms/csrf.html#SessionCSRF.validate_csrf_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.forms.csrf.SessionCSRF.validate_csrf_token" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate the CSRF token passed with form data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal notranslate"><span class="pre">None</span></code></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -222,12 +210,15 @@ this class expects that:</p>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -237,20 +228,18 @@ this class expects that:</p>
   <li><a href="modules.html">arxiv</a><ul>
   <li><a href="arxiv.forms.html">arxiv.forms package</a><ul>
       <li>Previous: <a href="arxiv.forms.html" title="previous chapter">arxiv.forms package</a></li>
-      <li>Next: <a href="arxiv.forms.tests.html" title="next chapter">arxiv.forms.tests module</a></li>
+      <li>Next: <a href="arxiv.identifier.html" title="next chapter">arxiv.identifier package</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -263,8 +252,8 @@ this class expects that:</p>
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="../_sources/arxiv/arxiv.forms.csrf.rst.txt"

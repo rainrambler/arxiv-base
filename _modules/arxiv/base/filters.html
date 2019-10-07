@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.base.filters &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for arxiv.base.filters</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Template filters.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">pytz</span> <span class="k">import</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="k">import</span> <span class="n">Flask</span>
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="k">import</span> <span class="n">Markup</span><span class="p">,</span> <span class="n">escape</span>
+
+<span class="kn">from</span> <span class="nn">arxiv.base.urls</span> <span class="k">import</span> <span class="n">urlizer</span><span class="p">,</span> <span class="n">canonical_url</span><span class="p">,</span> <span class="n">clickthrough_url</span>
+<span class="kn">from</span> <span class="nn">arxiv.util.tex2utf</span> <span class="k">import</span> <span class="n">tex2utf</span>
+<span class="kn">from</span> <span class="nn">arxiv.taxonomy</span> <span class="k">import</span> <span class="n">get_category_display</span><span class="p">,</span> <span class="n">get_archive_display</span><span class="p">,</span> \
+    <span class="n">get_group_display</span>
+
+<span class="n">ET</span> <span class="o">=</span> <span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;US/Eastern&#39;</span><span class="p">)</span>
+
+
+<span class="n">JinjaFilterInput</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Markup</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">   Jinja filters will receive their text input as either</span>
+<span class="sd">   a Markup object or a str. It is critical for proper escaping to</span>
+<span class="sd">   to ensure that str is correctly HTML escaped.</span>
+
+<span class="sd">   Markup is decoded from str so this type is redundant but</span>
+<span class="sd">   the hope is to make it clear what is going on to arXiv developers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="abstract_lf_to_br"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.abstract_lf_to_br">[docs]</a><span class="k">def</span> <span class="nf">abstract_lf_to_br</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">JinjaFilterInput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Markup</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Lines that start with two spaces should be broken.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">Markup</span><span class="p">):</span>
+        <span class="n">etxt</span> <span class="o">=</span> <span class="n">text</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">etxt</span> <span class="o">=</span> <span class="n">Markup</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+    <span class="c1"># if line starts with spaces, replace the white space with &lt;br /&gt;</span>
+    <span class="n">br</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;((?&lt;!^)\n +)&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&lt;br /&gt;&#39;</span><span class="p">,</span> <span class="n">etxt</span><span class="p">)</span>
+    <span class="n">dedup</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\n\n&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">br</span><span class="p">)</span>  <span class="c1"># skip if blank</span>
+    <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="n">dedup</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="f_tex2utf"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.f_tex2utf">[docs]</a><span class="k">def</span> <span class="nf">f_tex2utf</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="n">JinjaFilterInput</span><span class="p">,</span>
+              <span class="n">letters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Markup</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return output of tex2utf function as escaped Markup.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">Markup</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">escape</span><span class="p">(</span><span class="n">tex2utf</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">unescape</span><span class="p">(),</span> <span class="n">letters</span><span class="o">=</span><span class="n">letters</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="n">escape</span><span class="p">(</span><span class="n">tex2utf</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">letters</span><span class="o">=</span><span class="n">letters</span><span class="p">)))</span></div>
+
+
+<div class="viewcode-block" id="embed_content"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.embed_content">[docs]</a><span class="k">def</span> <span class="nf">embed_content</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Markup</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Embed the content of a static file.&quot;&quot;&quot;</span>
+    <span class="n">stat</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;static&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stat</span><span class="p">,</span> <span class="n">path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="tidy_filesize"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.tidy_filesize">[docs]</a><span class="k">def</span> <span class="nf">tidy_filesize</span><span class="p">(</span><span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert upload size to human readable form.</span>
+
+<span class="sd">    Decision to use powers of 10 rather than powers of 2 to stay compatible</span>
+<span class="sd">    with Jinja filesizeformat filter with binary=false setting that we are</span>
+<span class="sd">    using in file_upload template.</span>
+
+<span class="sd">    Parameter: size in bytes</span>
+<span class="sd">    Returns: formatted string of size in units up through GB</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;KB&quot;</span><span class="p">,</span> <span class="s2">&quot;MB&quot;</span><span class="p">,</span> <span class="s2">&quot;GB&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;0B&quot;</span>
+    <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1000000000</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">units</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">units_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">size</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+        <span class="n">units_index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">size</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">units</span><span class="p">[</span><span class="n">units_index</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="as_eastern"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.as_eastern">[docs]</a><span class="k">def</span> <span class="nf">as_eastern</span><span class="p">(</span><span class="n">utc_datetime</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">datetime</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Relocalize an UTC datetime in US/Eastern time.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">utc_datetime</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">ET</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="register_filters"><a class="viewcode-back" href="../../../arxiv/arxiv.base.filters.html#arxiv.base.filters.register_filters">[docs]</a><span class="k">def</span> <span class="nf">register_filters</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Flask</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register base template filters on a Flask app.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    app : :class:`Flask`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;abstract_lf_to_br&#39;</span><span class="p">)(</span><span class="n">abstract_lf_to_br</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;urlize&#39;</span><span class="p">)(</span><span class="n">urlizer</span><span class="p">())</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;tex2utf&#39;</span><span class="p">)(</span><span class="n">partial</span><span class="p">(</span><span class="n">f_tex2utf</span><span class="p">,</span> <span class="n">letters</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;tex2utf_no_symbols&#39;</span><span class="p">)(</span><span class="n">partial</span><span class="p">(</span><span class="n">f_tex2utf</span><span class="p">,</span> <span class="n">letters</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;canonical_url&#39;</span><span class="p">)(</span><span class="n">canonical_url</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;clickthrough_url&#39;</span><span class="p">)(</span><span class="n">clickthrough_url</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;get_category_display&#39;</span><span class="p">)(</span><span class="n">get_category_display</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;get_archive_display&#39;</span><span class="p">)(</span><span class="n">get_archive_display</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;get_group_display&#39;</span><span class="p">)(</span><span class="n">get_group_display</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;embed_content&#39;</span><span class="p">)(</span><span class="n">embed_content</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;tidy_filesize&#39;</span><span class="p">)(</span><span class="n">tidy_filesize</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;as_eastern&#39;</span><span class="p">)(</span><span class="n">as_eastern</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;abs_doi_to_urls&#39;</span><span class="p">)(</span><span class="n">urlizer</span><span class="p">([</span><span class="s1">&#39;doi_field&#39;</span><span class="p">]))</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_filter</span><span class="p">(</span><span class="s1">&#39;arxiv_id_urlize&#39;</span><span class="p">)(</span><span class="n">urlizer</span><span class="p">([</span><span class="s1">&#39;arxiv_id&#39;</span><span class="p">]))</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../base.html">arxiv.base</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

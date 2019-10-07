@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.integration.kinesis.consumer.exceptions module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="arxiv.integration.meta module" href="arxiv.integration.meta.html" />
+    <link rel="prev" title="arxiv.integration.kinesis.consumer package" href="arxiv.integration.kinesis.consumer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.integration.kinesis.consumer.exceptions">
+<span id="arxiv-integration-kinesis-consumer-exceptions-module"></span><h1>arxiv.integration.kinesis.consumer.exceptions module<a class="headerlink" href="#module-arxiv.integration.kinesis.consumer.exceptions" title="Permalink to this headline">¶</a></h1>
+<p>Exceptions raised by <a class="reference internal" href="arxiv.base.agent.html#arxiv.base.agent.BaseConsumer" title="arxiv.base.agent.BaseConsumer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseConsumer</span></code></a>.</p>
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.CheckpointError">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">CheckpointError</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#CheckpointError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.CheckpointError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Checkpointing failed.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.ConfigurationError">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">ConfigurationError</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#ConfigurationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.ConfigurationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>There was a problem with the configuration.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.KinesisRequestFailed">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">KinesisRequestFailed</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#KinesisRequestFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.KinesisRequestFailed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Raised when a Kinesis request failed permanently.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.RestartProcessing">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">RestartProcessing</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#RestartProcessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.RestartProcessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Something happened that requires a restart.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.StopProcessing">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">StopProcessing</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#StopProcessing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.StopProcessing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Gracefully stopped processing upon unrecoverable error.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="arxiv.integration.kinesis.consumer.exceptions.StreamNotAvailable">
+<em class="property">exception </em><code class="sig-prename descclassname">arxiv.integration.kinesis.consumer.exceptions.</code><code class="sig-name descname">StreamNotAvailable</code><a class="reference internal" href="../_modules/arxiv/integration/kinesis/consumer/exceptions.html#StreamNotAvailable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.integration.kinesis.consumer.exceptions.StreamNotAvailable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3.6/library/exceptions.html#RuntimeError" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
+<p>Could not find or connect to the stream.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.integration.html">arxiv.integration package</a><ul>
+  <li><a href="arxiv.integration.kinesis.html">arxiv.integration.kinesis package</a><ul>
+  <li><a href="arxiv.integration.kinesis.consumer.html">arxiv.integration.kinesis.consumer package</a><ul>
+      <li>Previous: <a href="arxiv.integration.kinesis.consumer.html" title="previous chapter">arxiv.integration.kinesis.consumer package</a></li>
+      <li>Next: <a href="arxiv.integration.meta.html" title="next chapter">arxiv.integration.meta module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.integration.kinesis.consumer.exceptions.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

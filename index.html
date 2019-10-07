@@ -1,11 +1,9 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>arXiv Base Documentation &#8212; arXiv base 0.2 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +12,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="arxiv" href="arxiv/modules.html" />
@@ -40,13 +38,13 @@
 arXiv-NG services.</p>
 <p>Each component of this project <strong>must</strong> meet all of the following criteria:</p>
 <ol class="arabic simple">
-<li>It is likely that the component will be utilized in many or all arXiv
-services.</li>
-<li>Once stable, it is unlikely to change often.</li>
-<li>It is unlikely that implementing new features in specific services
-would require changes to the component.</li>
-<li>When a component does change, it <strong>must</strong> change in the same way for all of
-the services that use it.</li>
+<li><p>It is likely that the component will be utilized in many or all arXiv
+services.</p></li>
+<li><p>Once stable, it is unlikely to change often.</p></li>
+<li><p>It is unlikely that implementing new features in specific services
+would require changes to the component.</p></li>
+<li><p>When a component does change, it <strong>must</strong> change in the same way for all of
+the services that use it.</p></li>
 </ol>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
@@ -55,10 +53,19 @@ the services that use it.</li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.base.html">arxiv.base package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.forms.html">arxiv.forms package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.integration.html">arxiv.integration package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.mail.html">arxiv.mail package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.status.html">arxiv.status package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="arxiv/arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv/metadocs.html">Meta-documentation: How to create documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/metadocs.html#adding-sphinx-to-the-pipfile">Adding Sphinx to the Pipfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/metadocs.html#testing-sphinx">Testing Sphinx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/metadocs.html#creating-auto-doc-stubs">Creating auto-doc stubs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv/metadocs.html#configuring-github-pages">Configuring GitHub pages</a></li>
 </ul>
 </li>
 </ul>
@@ -85,6 +92,7 @@ the services that use it.</li>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="arxiv/modules.html">arxiv</a></li>
+<li class="toctree-l1"><a class="reference internal" href="arxiv/metadocs.html">Meta-documentation: How to create documentation</a></li>
 </ul>
 
 <div class="relations">
@@ -96,13 +104,11 @@ the services that use it.</li>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
@@ -115,8 +121,8 @@ the services that use it.</li>
       &copy;2017, arXiv Team.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"

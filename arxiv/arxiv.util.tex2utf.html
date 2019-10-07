@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>arxiv.util.tex2utf module &#8212; arXiv base 0.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Meta-documentation: How to create documentation" href="metadocs.html" />
+    <link rel="prev" title="arxiv.util.serialize module" href="arxiv.util.serialize.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-arxiv.util.tex2utf">
+<span id="arxiv-util-tex2utf-module"></span><h1>arxiv.util.tex2utf module<a class="headerlink" href="#module-arxiv.util.tex2utf" title="Permalink to this headline">¶</a></h1>
+<p>Convert between TeX escapes and UTF8.</p>
+<dl class="data">
+<dt id="arxiv.util.tex2utf.accents">
+<code class="sig-prename descclassname">arxiv.util.tex2utf.</code><code class="sig-name descname">accents</code><em class="property"> = {'&quot;A': 196, '&quot;E': 203, '&quot;I': 207, '&quot;O': 214, '&quot;U': 220, '&quot;Y': 376, '&quot;a': 228, '&quot;e': 235, '&quot;i': 239, '&quot;o': 246, '&quot;u': 252, '&quot;y': 255, &quot;'A&quot;: 193, &quot;'C&quot;: 262, &quot;'E&quot;: 201, &quot;'I&quot;: 205, &quot;'L&quot;: 313, &quot;'N&quot;: 323, &quot;'O&quot;: 211, &quot;'R&quot;: 340, &quot;'S&quot;: 346, &quot;'U&quot;: 218, &quot;'Y&quot;: 221, &quot;'Z&quot;: 377, &quot;'a&quot;: 225, &quot;'c&quot;: 263, &quot;'e&quot;: 233, &quot;'i&quot;: 237, &quot;'l&quot;: 314, &quot;'n&quot;: 324, &quot;'o&quot;: 243, &quot;'r&quot;: 341, &quot;'s&quot;: 347, &quot;'u&quot;: 250, &quot;'y&quot;: 253, &quot;'z&quot;: 378, '.A': 550, '.C': 266, '.E': 278, '.G': 288, '.I': 304, '.O': 558, '.Z': 379, '.a': 551, '.c': 267, '.e': 279, '.g': 289, '.o': 559, '.z': 380, '=A': 256, '=E': 274, '=I': 298, '=O': 332, '=U': 362, '=Y': 562, '=a': 257, '=e': 275, '=i': 299, '=o': 333, '=u': 363, '=y': 563, 'HO': 336, 'HU': 368, 'Ho': 337, 'Hu': 369, '^A': 194, '^C': 264, '^E': 202, '^G': 284, '^H': 292, '^I': 206, '^J': 308, '^O': 212, '^S': 348, '^U': 219, '^W': 372, '^Y': 374, '^a': 226, '^c': 265, '^e': 234, '^g': 285, '^h': 293, '^i': 238, '^j': 309, '^o': 244, '^s': 349, '^u': 251, '^w': 373, '^y': 375, '`A': 192, '`E': 200, '`I': 204, '`O': 210, '`U': 217, '`a': 224, '`e': 232, '`i': 236, '`o': 242, '`u': 249, 'cC': 199, 'cE': 552, 'cG': 290, 'cK': 310, 'cL': 315, 'cN': 325, 'cR': 342, 'cS': 350, 'cT': 354, 'cc': 231, 'ce': 553, 'cg': 291, 'ck': 311, 'cl': 316, 'cn': 326, 'cr': 343, 'cs': 351, 'ct': 355, 'kA': 260, 'kE': 280, 'kI': 302, 'kO': 490, 'kU': 370, 'ka': 261, 'ke': 281, 'ki': 303, 'ko': 491, 'ku': 371, 'rA': 197, 'rU': 366, 'ra': 229, 'ru': 367, 'uA': 258, 'uE': 276, 'uG': 286, 'uI': 300, 'uO': 334, 'uU': 364, 'ua': 259, 'ue': 277, 'ug': 287, 'ui': 301, 'uo': 335, 'uu': 365, 'vA': 461, 'vC': 268, 'vD': 270, 'vE': 282, 'vG': 486, 'vH': 542, 'vI': 463, 'vK': 488, 'vL': 317, 'vN': 327, 'vO': 465, 'vR': 344, 'vS': 352, 'vT': 356, 'vU': 467, 'vZ': 381, 'va': 462, 'vc': 269, 'vd': 271, 've': 283, 'vg': 487, 'vh': 543, 'vi': 464, 'vk': 489, 'vl': 318, 'vn': 328, 'vo': 466, 'vr': 345, 'vs': 353, 'vt': 357, 'vu': 468, 'vz': 382, '~A': 195, '~I': 296, '~N': 209, '~O': 213, '~U': 360, '~a': 227, '~i': 297, '~n': 241, '~o': 245, '~u': 361}</em><a class="headerlink" href="#arxiv.util.tex2utf.accents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hash to lookup tex markup and convert to Unicode.</p>
+<p>macron: a line above character (overbar ={} in TeX)
+caron: v-shape above character (v{ } in TeX)
+See: <a class="reference external" href="http://www.unicode.org/charts/">http://www.unicode.org/charts/</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.util.tex2utf.tex2utf">
+<code class="sig-prename descclassname">arxiv.util.tex2utf.</code><code class="sig-name descname">tex2utf</code><span class="sig-paren">(</span><em class="sig-param">tex</em>, <em class="sig-param">letters=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/util/tex2utf.html#tex2utf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.util.tex2utf.tex2utf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert some TeX accents and greek symbols to UTF-8 characters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tex</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – Text to filter.</p></li>
+<li><p><strong>letters</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If False, do not convert greek letters or</p></li>
+</ul>
+</dd>
+</dl>
+<p>ligatures.  Greek symbols can cause problems. Ex. phi is not
+suppose to look like φ. φ looks like varphi.  See ARXIVNG-1612</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>string, possibly with some TeX replaced with UTF8</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="arxiv.util.tex2utf.texch2UTF">
+<code class="sig-prename descclassname">arxiv.util.tex2utf.</code><code class="sig-name descname">texch2UTF</code><span class="sig-paren">(</span><em class="sig-param">acc</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/arxiv/util/tex2utf.html#texch2UTF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#arxiv.util.tex2utf.texch2UTF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert single character TeX accents to UTF-8.</p>
+<p>Strip non-whitepsace characters from any sequence not recognized (hence
+could return an empty string if there are no word characters in the input
+string).</p>
+<p>chr(num) will automatically create a UTF8 string for big num</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">arXiv base</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">arxiv</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="arxiv.base.html">arxiv.base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.forms.html">arxiv.forms package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.identifier.html">arxiv.identifier package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.integration.html">arxiv.integration package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.license.html">arxiv.license package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.mail.html">arxiv.mail package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.status.html">arxiv.status package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arxiv.taxonomy.html">arxiv.taxonomy package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="arxiv.util.html">arxiv.util package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="metadocs.html">Meta-documentation: How to create documentation</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">arxiv</a><ul>
+  <li><a href="arxiv.util.html">arxiv.util package</a><ul>
+      <li>Previous: <a href="arxiv.util.serialize.html" title="previous chapter">arxiv.util.serialize module</a></li>
+      <li>Next: <a href="metadocs.html" title="next chapter">Meta-documentation: How to create documentation</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, arXiv Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/arxiv/arxiv.util.tex2utf.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
