@@ -9957,6 +9957,7 @@ footer .nav-spaced li {
   display: flex;
   align-items: center;
 }
+
 /**** Primary content default styling ****/
 main {
   padding: 3rem 1.5rem;
@@ -10278,6 +10279,23 @@ li.is-success p:before {
 
 .pagination-list li + li {
   margin: 0;
+}
+
+/*icon styles*/
+.icon.filter-white {
+  fill: #FFFFFF;
+}
+
+.icon.filter-black {
+  fill: #000000;
+}
+
+.icon.filter-blue {
+  fill: #0068ac;
+}
+
+.icon.filter-red {
+  fill: #b31b1b;
 }
 
 /*# sourceMappingURL=arxivstyle.css.map */
