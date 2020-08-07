@@ -68,6 +68,21 @@ def getLogger(name: str, stream: IO = sys.stderr) -> logging.Logger:
     datefmt = '%d/%b/%Y:%H:%M:%S %z'    # Used to format asctime.
     handler = logging.StreamHandler(stream)
     handler.setFormatter(RequestFormatter(fmt=fmt, datefmt=datefmt))
-    logger.handlers = []    # Clear default handler(s).
+
+    # Add support for file-based log
+    logfile = int(config.get('LOGFILE', None))
+
+    logger.handlers = []  # Clear default handler(s).
     logger.addHandler(handler)
+
+    if logfile:
+        # Check if there is a custom level for file-based log
+        filelevel = int(config.get('LOGFILELEVEL', logging.DEBUG))
+        filehandler = logging.FileHandler(logfile)
+        filehandler.setLevel(filelevel)
+
+        # Keep the same formatting
+        filehandler.setFormatter(RequestFormatter(fmt=fmt, datefmt=datefmt))
+        logger.addHandler(filehandler)
+
     return logger
