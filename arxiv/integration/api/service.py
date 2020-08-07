@@ -248,6 +248,8 @@ class HTTPIntegration(metaclass=MetaIntegration):
         if not hasattr(cls, 'Meta'):
             raise NotImplementedError('Child class must have Meta class')
         name = cls.Meta.service_name.upper()
+        endpoint = f'{name}_ENDPOINT'
+        logger.debug('Initializing %s HTTP integration service (Endpoint is %s)', name, endpoint)
         app.config.setdefault(f'{name}_ENDPOINT', DEFAULT_ENDPOINT)
         app.config.setdefault(f'{name}_VERIFY', DEFAULT_VERIFY)
 
