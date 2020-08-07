@@ -70,7 +70,7 @@ def getLogger(name: str, stream: IO = sys.stderr) -> logging.Logger:
     handler.setFormatter(RequestFormatter(fmt=fmt, datefmt=datefmt))
 
     # Add support for file-based log
-    logfile = int(config.get('LOGFILE', None))
+    logfile = config.get('LOGFILE')
 
     logger.handlers = []  # Clear default handler(s).
     logger.addHandler(handler)
