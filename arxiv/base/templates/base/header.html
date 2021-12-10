@@ -1,5 +1,69 @@
+<div class="container container-wide">
+  <div class="row justify-content-between align-items-center">
+    <div class="col-auto">
+      <a class="navbar-brand" href="{{ url_for('home') }}">
+        <img src="{{ url_for('base.static', filename='images/logo-arxiv.svg') }}" class="arxiv-logo" alt="arXiv logo" width="60">
+      </a>
+    </div>
+    <div class="col-auto">
+      Status: <a href="" class="status-circle"></a> <a href="" class="status-message">All system are go</a>
+    </div>
+    <div class="col-auto">
+      <div class="search-container">
+        <button class="search-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#searchSupportedContent" aria-controls="searchSupportedContent" aria-expanded="false" aria-label="Toggle search" >
+          <svg width="20" height="20" fill="currentColor" role="presentation">
+            <use xlink:href="{{ url_for('base.static', filename='bootstrap/bootstrap-icons.svg') }}#search"/>
+          </svg>
+        </button>
+        <span class="search-toggled collapse collapsing" id="searchSupportedContent">{{ macros.universalsearch('Search for papers', [ ['searchtype','all'] ]) }}</span>
+      </div>
+      {% if request.auth and request.auth.user and request.auth.user.name %}
+        Welcome <span class="has-text-weight-bold">{{ request.auth.user.name.forename }}</span> | <a href="{{ url_for('account') }}">My Account</a> | <a href="">My Feeds</a> | <a class="nav-link" href="{{ url_for('submit') }}">Submit</a> | <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+    <path fill-rule="evenodd" d="M2.5 11.5A.5.5 0 0 1 3 11h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 7h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4A.5.5 0 0 1 3 3h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+  </svg>
+</button> -->
+
+<!-- <div class="collapse navbar-collapse arxiv-navbar-container" id="navbarSupportedContent">
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('search_box') }}">
+        <div class="anchor">Papers</div>
+        <div class="text-note" role="presentation">Search and read everything on {{ macros.accessible_name() }} for free.</div>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{{ url_for('submit') }}">
+        <div class="anchor">Submit</div>
+        <div class="text-note" role="presentation">Share and archive your research.</div>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="https://labs.arxiv.org/">
+        <div class="anchor">Labs</div>
+        <div class="text-note" role="presentation">Partner projects that extend {{ macros.accessible_name() }}.</div>
+      </a>
+    </li>
+    <li>
+      {{ macros.universalsearch('Search for papers', [ ['searchtype','all'] ]) }}
+      <a href="{{ url_for('search_advanced') }}">Advanced Search</a>
+    </li>
+  </ul>
+</div> -->
+
+
+
+<!--
 <div class="arxiv-prenav"><div class="container container-wide">
-    <div class="row">
+  <div class="row">
     <div class="col d-none d-sm-block">
       <p>arXiv is stewarded by Cornell Tech and <a href="{{ url_for('about') }}/membership">supported by our global community.</a></p>
     </div>
@@ -48,4 +112,4 @@
       </div>
     </div>
   </nav>
-</div></div>
+</div></div> -->

@@ -12014,18 +12014,6 @@ h6, .h6 {
   }
 }
 
-header .arxiv-prenav {
-  padding: 0.3em;
-  border-bottom: 2px solid #b31b1b;
-  font-size: 0.85em;
-  background-color: #f9f7f7;
-}
-header .arxiv-prenav p {
-  margin-bottom: 0;
-}
-header .arxiv-prenav .container {
-  margin-bottom: 0;
-}
 header .arxiv-search {
   min-width: 10em;
 }
@@ -12036,6 +12024,66 @@ header .arxiv-search input {
   header .arxiv-search {
     min-width: 20em;
   }
+}
+header .status-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  display: inline-block;
+}
+header .status-circle.positive {
+  background-color: #198754;
+}
+header .status-circle.warning {
+  background-color: #ffc107;
+}
+header .status-circle.error {
+  background-color: #dc3545;
+}
+header .search-container {
+  border: 1px solid #c7c6c6;
+  border-radius: 25px;
+  margin: 0.25em;
+  padding: 0;
+  display: inline-block;
+}
+header .search-toggler {
+  border: 0;
+  background: transparent;
+  height: 2em;
+  min-width: 2em;
+}
+header .search-toggler svg {
+  margin: 0.3em 0.1em;
+  color: #7c7469;
+}
+header .search-toggled {
+  float: right;
+  width: auto;
+  height: auto;
+  transition: width 0.35s ease;
+}
+header .search-toggled.collapse.show {
+  width: 240px;
+  overflow: hidden;
+}
+header .search-toggled.collapsing {
+  width: 0;
+  height: auto;
+  overflow: hidden;
+  transition: all 0.35s ease;
+}
+header .search-toggled.collapse.show .arxiv-search input {
+  width: 200px;
+  border: 0;
+  border-radius: 0;
+  margin-right: 2px;
+}
+header .search-toggled.collapse.show .arxiv-search button {
+  border: 0;
+}
+header .search-toggled.collapse.show .arxiv-search button svg {
+  top: -2px;
 }
 
 .arxiv-search input {

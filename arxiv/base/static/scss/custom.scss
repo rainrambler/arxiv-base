@@ -314,18 +314,18 @@ h6 {
 
 //header styles
 header {
-  .arxiv-prenav {
-    padding: .3em;
-    border-bottom: 2px solid $cornell-red;
-    font-size: .85em;
-    background-color: $warm-wash;
-    p {
-      margin-bottom: 0;
-    }
-    .container {
-      margin-bottom: 0;
-    }
-  }
+  // .arxiv-prenav {
+  //   padding: .3em;
+  //   border-bottom: 2px solid $cornell-red;
+  //   font-size: .85em;
+  //   background-color: $warm-wash;
+  //   p {
+  //     margin-bottom: 0;
+  //   }
+  //   .container {
+  //     margin-bottom: 0;
+  //   }
+  // }
   .arxiv-search {
     min-width: 10em;
     input {
@@ -335,6 +335,72 @@ header {
       min-width: 20em;
     }
   }
+
+  .status-circle {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    display: inline-block;
+    &.positive {
+      background-color: $green;
+    }
+    &.warning {
+      background-color: $yellow;
+    }
+    &.error {
+      background-color: $red;
+    }
+  }
+  .status-message {
+
+  }
+
+  .search-container {
+    border: 1px solid $warm-wash-800;
+    border-radius: 25px;
+    margin:.25em;
+    padding:0;
+    display: inline-block;
+  }
+  .search-toggler {
+    border:0;
+    background: transparent;
+    height: 2em;
+    min-width: 2em;
+    svg {
+      margin: 0.3em 0.1em;
+      color: $light-warm-grey;
+    }
+  }
+  .search-toggled {
+    float: right;
+    width: auto;
+    height: auto;
+    transition: width .35s ease;
+  }
+  .search-toggled.collapse.show  {
+    width: 240px;
+    overflow: hidden;
+  }
+  .search-toggled.collapsing {
+    width: 0;
+    height: auto;
+    overflow: hidden;
+    transition: all .35s ease;
+  }
+  .search-toggled.collapse.show .arxiv-search input {
+    width: 200px;
+    border: 0;
+    border-radius: 0;
+    margin-right:2px;
+  }
+  .search-toggled.collapse.show .arxiv-search button {
+    border: 0;
+    svg {
+      top: -2px;
+    }
+  }
+
 }
 
 //Search universal
