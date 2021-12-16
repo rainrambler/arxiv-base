@@ -5976,15 +5976,15 @@ textarea.form-control-lg {
 }
 
 .ratio-4x3 {
-  --bs-aspect-ratio: calc(3 / 4 * 100%);
+  --bs-aspect-ratio: 75%;
 }
 
 .ratio-16x9 {
-  --bs-aspect-ratio: calc(9 / 16 * 100%);
+  --bs-aspect-ratio: 56.25%;
 }
 
 .ratio-21x9 {
-  --bs-aspect-ratio: calc(9 / 21 * 100%);
+  --bs-aspect-ratio: 42.8571428571%;
 }
 
 .fixed-top {
@@ -12014,6 +12014,11 @@ h6, .h6 {
   }
 }
 
+header {
+  background-color: #fdfdfd;
+  border-bottom: 1px solid #d3d1cd;
+  margin-bottom: 0.5em;
+}
 header .arxiv-search {
   min-width: 10em;
 }
@@ -12041,8 +12046,6 @@ header .status-circle.error {
   background-color: #dc3545;
 }
 header .search-container {
-  border: 1px solid #c7c6c6;
-  border-radius: 25px;
   margin: 0.25em;
   padding: 0;
   display: inline-block;
@@ -12075,38 +12078,23 @@ header .search-toggled.collapsing {
 }
 header .search-toggled.collapse.show .arxiv-search input {
   width: 200px;
-  border: 0;
-  border-radius: 0;
   margin-right: 2px;
-}
-header .search-toggled.collapse.show .arxiv-search button {
-  border: 0;
 }
 header .search-toggled.collapse.show .arxiv-search button svg {
   top: -2px;
 }
 
 .arxiv-search input {
-  border: 0.5px solid #949494;
-  border-right: none;
   margin-right: 0 !important;
   height: 2em;
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  border-top-left-radius: 1em;
-  border-bottom-left-radius: 1em;
+  border-bottom: 1px solid #6b6459;
 }
 .arxiv-search button.btn {
-  border: 0.5px solid #949494;
   color: #1f5e96;
   font-weight: 900;
   background-color: #a5d6fe;
-  margin-left: 0;
+  margin-left: 0.2em;
   height: 2em;
-  border-top-right-radius: 1em;
-  border-bottom-right-radius: 1em;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
 }
 .arxiv-search button.btn:hover {
   background-color: #f7fafc;
