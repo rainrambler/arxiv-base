@@ -346,9 +346,11 @@ header {
 
   }
 
+/*expandable search in header*/
   .search-container {
-    margin:.25em;
-    padding:0;
+    margin: .25em;
+    margin-right: .5em;
+    padding: 0;
     display: inline-block;
   }
   .search-toggler {
@@ -384,6 +386,7 @@ header {
   .search-toggled.collapse.show .arxiv-search button {
     svg {
       top: -2px;
+      right: 50%;
     }
   }
 
@@ -394,7 +397,9 @@ header {
   input {
     margin-right: 0 !important;
     height: 2em;
-    border-bottom: 1px solid $warm-grey;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid $warm-grey-300;
   }
   button.btn {
     color: $dark-blue;
@@ -402,6 +407,7 @@ header {
     background-color: $bright-blue;
     margin-left: .2em;
     height: 2em;
+    border-radius: 0;
     &:hover {
       background-color: $cool-wash;
     }

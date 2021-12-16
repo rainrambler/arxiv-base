@@ -12018,6 +12018,7 @@ header {
   background-color: #fdfdfd;
   border-bottom: 1px solid #d3d1cd;
   margin-bottom: 0.5em;
+  /*expandable search in header*/
 }
 header .arxiv-search {
   min-width: 10em;
@@ -12047,6 +12048,7 @@ header .status-circle.error {
 }
 header .search-container {
   margin: 0.25em;
+  margin-right: 0.5em;
   padding: 0;
   display: inline-block;
 }
@@ -12082,12 +12084,15 @@ header .search-toggled.collapse.show .arxiv-search input {
 }
 header .search-toggled.collapse.show .arxiv-search button svg {
   top: -2px;
+  right: 50%;
 }
 
 .arxiv-search input {
   margin-right: 0 !important;
   height: 2em;
-  border-bottom: 1px solid #6b6459;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 1px solid #b5b2ac;
 }
 .arxiv-search button.btn {
   color: #1f5e96;
@@ -12095,6 +12100,7 @@ header .search-toggled.collapse.show .arxiv-search button svg {
   background-color: #a5d6fe;
   margin-left: 0.2em;
   height: 2em;
+  border-radius: 0;
 }
 .arxiv-search button.btn:hover {
   background-color: #f7fafc;
