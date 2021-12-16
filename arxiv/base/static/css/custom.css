@@ -12084,7 +12084,7 @@ header .search-toggled.collapse.show .arxiv-search input {
 }
 header .search-toggled.collapse.show .arxiv-search button svg {
   top: -2px;
-  right: 50%;
+  right: 0.25em;
 }
 
 .arxiv-search input {
