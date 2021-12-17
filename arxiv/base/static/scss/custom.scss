@@ -4,10 +4,6 @@
 //////Bootstrap source
 @import "../bootstrap/scss/bootstrap";
 
-
-
-
-
 //////Bootstrap custom overrides and extensions
 @import 'custom-colors';
 @import 'custom-borders';
@@ -646,6 +642,15 @@ footer {
 }
 
 //ABS
+
+.offcanvas {
+  display:  flex;
+  height: 100%;
+  object {
+    flex: 1 1 auto;
+    overflow-y: scroll;
+  }
+}
 .arxiv-abstract {
   h1.title {
     font-size: 2em;

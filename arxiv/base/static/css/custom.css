@@ -12412,6 +12412,15 @@ footer {
   margin-top: 2em;
 }
 
+.offcanvas {
+  display: flex;
+  height: 100%;
+}
+.offcanvas object {
+  flex: 1 1 auto;
+  overflow-y: scroll;
+}
+
 .arxiv-abstract h1.title, .arxiv-abstract .title.h1 {
   font-size: 2em;
 }
