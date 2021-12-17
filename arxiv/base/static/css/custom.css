@@ -12415,6 +12415,7 @@ footer {
 .offcanvas {
   display: flex;
   height: 100%;
+  width: 80%;
 }
 .offcanvas object {
   flex: 1 1 auto;
