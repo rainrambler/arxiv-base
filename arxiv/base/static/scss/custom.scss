@@ -642,9 +642,12 @@ footer {
 }
 
 //ABS
-.offcanvas {
-
+@media (min-width: 768px) {
+  .offcanvas {
+    width: 80% !important;
+  }
 }
+
 .arxiv-abstract {
   h1.title {
     font-size: 2em;

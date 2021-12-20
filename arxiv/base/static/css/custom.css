@@ -12412,6 +12412,11 @@ footer {
   margin-top: 2em;
 }
 
+@media (min-width: 768px) {
+  .offcanvas {
+    width: 80% !important;
+  }
+}
 .arxiv-abstract h1.title, .arxiv-abstract .title.h1 {
   font-size: 2em;
 }
