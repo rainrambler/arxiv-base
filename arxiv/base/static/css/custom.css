@@ -12412,9 +12412,17 @@ footer {
   margin-top: 2em;
 }
 
+.arxiv-download-buttons button {
+  width: 100%;
+}
+
 @media (min-width: 768px) {
   .offcanvas {
     width: 80% !important;
+  }
+
+  .arxiv-download-buttons button {
+    width: auto;
   }
 }
 .arxiv-abstract h1.title, .arxiv-abstract .title.h1 {
