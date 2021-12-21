@@ -12449,8 +12449,7 @@ footer {
   margin-left: 1em;
 }
 .arxiv-labs button.accordion-button:not(.collapsed) {
-  background-color: #6b6459;
-  color: white;
+  background-color: #f7fafc;
 }
 .arxiv-labs .toggles {
   padding: 1em 1em 1em 2em;
