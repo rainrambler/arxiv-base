@@ -682,7 +682,7 @@ footer {
   }
   button.accordion-button {
     background-color: transparent;
-    &::after {
+    &:after {
       margin-left: 1em;
     }
   }

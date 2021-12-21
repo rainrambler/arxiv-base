@@ -12443,7 +12443,7 @@ footer {
 .arxiv-labs button.accordion-button {
   background-color: transparent;
 }
-.arxiv-labs button.accordion-button::after {
+.arxiv-labs button.accordion-button:after {
   margin-left: 1em;
 }
 .arxiv-labs .toggles {
