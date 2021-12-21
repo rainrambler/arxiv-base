@@ -11784,7 +11784,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: freight-sans-pro, arial, sans-serif;
+  font-family: "freight-sans-pro", arial, sans-serif;
   font-style: normal;
   font-weight: 300;
 }
@@ -11794,7 +11794,7 @@ a {
 }
 
 p {
-  font-family: freight-text-pro, georgia, serif;
+  font-family: "freight-text-pro", georgia, serif;
   font-style: normal;
   font-weight: 300;
 }
@@ -12534,9 +12534,11 @@ footer {
   }
 }
 
-.arxiv-labs {
-  background-color: #f7fafc;
-  padding: 1em;
+.arxiv-labs p {
+  font-family: "freight-sans-pro";
+}
+.arxiv-labs button {
+  background-color: transparent;
 }
 .arxiv-labs .toggles {
   padding: 1em 1em 1em 2em;

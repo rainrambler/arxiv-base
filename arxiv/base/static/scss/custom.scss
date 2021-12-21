@@ -16,7 +16,7 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: freight-sans-pro, arial, sans-serif;
+  font-family: 'freight-sans-pro', arial, sans-serif;
   font-style: normal;
   font-weight: 300;
 }
@@ -24,7 +24,7 @@ a {
   color: $dark-blue;
 }
 p {
-  font-family: freight-text-pro, georgia, serif;
+  font-family: 'freight-text-pro', georgia, serif;
   font-style: normal;
   font-weight: 300;
 }
@@ -775,10 +775,14 @@ footer {
   }
 }
 
-// //LABS
+//LABS
 .arxiv-labs {
-  background-color: $cool-wash;
-  padding: 1em;
+  p {
+    font-family: 'freight-sans-pro';
+  }
+  button {
+    background-color: transparent;
+  }
   .toggles {
     padding: 1em 1em 1em 2em;
     border: 1px dotted $cool-wash-800;
@@ -851,7 +855,6 @@ footer {
         background: $bright-blue;
       }
     }
-
   }
   .labs-icon {
     width: 50%;
@@ -860,45 +863,6 @@ footer {
     font-size: 1.3em;
   }
 }
-// .arxiv-labs {
-//   margin-top: 1em;
-//   border-bottom: 3px solid $cool-wash-800;
-//   .nav-link {
-//     padding-left: 1.5em;
-//     padding-right: 1.25em;
-//     background-color: $cool-wash-600;
-//     &:not(.active) {
-//       height: calc(100% - 3px);
-//     }
-//   }
-//   .nav-link.active {
-//     background-color: $cool-wash;
-//     border-color: $cool-wash-700 $cool-wash-700 $cool-wash-300;
-//   }
-//   .nav-item {
-//     margin-right: .2em;
-//     &:first-child {
-//       margin-left: 1em;
-//     }
-//   }
-//
-//   @media (min-width: 576px) {
-//     margin-top: 2em;
-//     .nav-item:first-child {
-//       margin-left: 3em;
-//     }
-//     .nav-link {
-//       padding-left: 1em;
-//       padding-right: 1em;
-//     }
-//     .tab-content {
-//       padding: 2em 3em;
-//       .labs-icon {
-//         width: 6em;
-//       }
-//     }
-//   }
-// }
 //Papers With Code custom styles
 #pwc-output {
     padding: 7px;
