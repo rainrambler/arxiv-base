@@ -38,6 +38,14 @@ strong {
 p strong {
   font-weight: 600;
 }
+ul.unstyled-horizontal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  li {
+    display: inline-block;
+  }
+}
 svg {
   width: 1em;
   margin-top: -.15em;
@@ -654,19 +662,6 @@ footer {
   .arxiv-download-buttons {
     button {
       width: auto;
-    }
-  }
-}
-.author-info {
-  .list-group {
-    border: none;
-    li {
-      border: none;
-      margin: 0;
-      padding:0;
-      a {
-        font-size: 1.2em;
-      }
     }
   }
 }

@@ -11812,6 +11812,15 @@ p strong {
   font-weight: 600;
 }
 
+ul.unstyled-horizontal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.unstyled-horizontal li {
+  display: inline-block;
+}
+
 svg {
   width: 1em;
   margin-top: -0.15em;
@@ -12425,18 +12434,6 @@ footer {
     width: auto;
   }
 }
-.author-info .list-group {
-  border: none;
-}
-.author-info .list-group li {
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-.author-info .list-group li a {
-  font-size: 1.2em;
-}
-
 .arxiv-labs p {
   font-family: "freight-sans-pro";
 }
