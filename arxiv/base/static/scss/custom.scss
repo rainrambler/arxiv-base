@@ -657,131 +657,34 @@ footer {
     }
   }
 }
-
-
-.arxiv-abstract {
-  h1.title {
-    font-size: 2em;
-  }
-  .dateline {
-    font-weight: 600;
-    font-size: .95em;
-  }
-  .abstract {
-    font-family: 'freight-text-pro';
-    margin-top: 1.5em;
-  }
-  .metadata {
-    margin-top: 1.5em;
-  }
-  .arxiv-mobile-download {
-    margin-top: 1em;
-  }
-}
-
-.arxiv-sidebar {
-  .card {
-    border: 0;
-    padding: 0;
-    .card-body {
-      padding: 0;
-      strong {
-        font-weight: 600;
-      }
-      p {
-        font-size: 13px;
-        margin-bottom: .15em;
-        font-family: 'freight-sans-pro';
-      }
-    }
-    .card-text {
-      margin-left: 1em;
-    }
-  }
-  h4 {
-    margin-top: .6em;
-    margin-bottom: .1em;
-  }
-  h5 {
-    margin: .5em 0 0 0;
-  }
-  .bib-sidebar {
-    border-bottom: 0;
-  }
-
-  .arxiv-sidebar-more { /* styles for sidebar accordions */
-    padding-bottom: .5em;
-    margin-bottom: .5em;
-    .accordion-button {
+.author-info {
+  .list-group {
+    border: none;
+    li {
+      border: none;
       margin: 0;
-      padding: .5em 0;
-      font-size: .4em;
-      width: auto;
-      &::after {
-        width: .75rem;
-        height: .75rem;
-        margin-left: .5em;
-        background-size: .75rem;
+      padding:0;
+      a {
+        font-size: 1.2em;
       }
     }
-    .accordion-collapse {
-      border-bottom-width: 0;
-    }
-    .accordion-body {
-      padding: .5em 0;
-    }
-  }
-
-  .arxiv-browse-context {
-    background-color: $cool-wash;
-    .arxiv-search {
-      button.btn {
-        background-color: #ffffff;
-        svg {
-          color: #ababab;
-        }
-      }
-    }
-    .abs-switch-cat {
-      margin-top: 1em;
-      line-height: 1.1em;
-      font-size: 13px;
-      .context-change {
-        a {
-          font-size: 16px;
-          &:not(:last-child):after {
-            content: ",";
-            margin-right: .25em;
-          }
-        }
-        a.subclass {
-          font-style: italic;
-        }
-      }
-    }
-    .arxiv-prevnext {
-      margin: .5em 0;
-    }
-    .arxiv-browse-new-papers {
-      margin: .25em 0;
-      strong {
-        font-weight: 600;
-      }
-    }
-  }
-  @media (max-width: 768px) {
-    border: none !important;
-    margin-top: 1em;
   }
 }
+
+
+
+
 
 //LABS
 .arxiv-labs {
   p {
     font-family: 'freight-sans-pro';
   }
-  button {
+  button.accordion-button {
     background-color: transparent;
+    &::after {
+      margin-left: 1em;
+    }
   }
   .toggles {
     padding: 1em 1em 1em 2em;
