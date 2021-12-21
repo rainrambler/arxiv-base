@@ -665,9 +665,11 @@ footer {
     }
   }
 }
-
-
-
+.metadata {
+  li strong {
+    font-weight: 500;
+  }
+}
 
 
 //LABS
@@ -676,9 +678,14 @@ footer {
     font-family: 'freight-sans-pro';
   }
   button.accordion-button {
-    background-color: transparent;
+    text-decoration: underline;
+    color: $dark-blue;
     &:after {
       margin-left: 1em;
+    }
+    &:not(.collapsed) {
+      background-color: $warm-grey
+      color: white;
     }
   }
   .toggles {
