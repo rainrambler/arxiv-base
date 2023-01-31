@@ -14,14 +14,18 @@ A11Y_URL = os.environ.get(
 
 EXTERNAL_URL_SCHEME = os.environ.get("EXTERNAL_URL_SCHEME", "https")
 BASE_SERVER = os.environ.get("BASE_SERVER", "arxiv.org")
+"""Hostname of arxiv"""
+
+DOCS_SERVER = os.environ.get("DOCS_SERVER", "info.arxiv.org")
+"""Hostname of arxiv docs"""
 
 URLS = [
-    ("help", "/help", BASE_SERVER),
-    ("help_identifier", "/help/arxiv_identifier", BASE_SERVER),
-    ("help_trackback", "/help/trackback", BASE_SERVER),
-    ("help_mathjax", "/help/mathjax", BASE_SERVER),
-    ("help_social_bookmarking", "/help/social_bookmarking", BASE_SERVER),
-    ("contact", "/help/contact", BASE_SERVER),
+    ("help", "/help/index.html", DOCS_SERVER),
+    ("help_identifier", "/help/arxiv_identifier.html", DOCS_SERVER),
+    ("help_trackback", "/help/trackback.html", DOCS_SERVER),
+    ("help_mathjax", "/help/mathjax.html", DOCS_SERVER),
+    ("help_social_bookmarking", "/help/social_bookmarking.html", DOCS_SERVER),
+    ("contact", "/help/contact.html", DOCS_SERVER),
     ("search_box", "/search", BASE_SERVER),
     ("search_archive", "/search/<archive>", BASE_SERVER),
     ("search_advanced", "/search/advanced", BASE_SERVER),
@@ -36,18 +40,36 @@ URLS = [
     ("wiki", "/display/arxivpub/arXiv+Public+Wiki", "confluence.cornell.edu"),
     ("library", "/", "library.cornell.edu"),
     ("university", "/", "cornell.edu"),
-    ("acknowledgment", "/about/ourmembers", BASE_SERVER),
-    ("faq", "/help/faq", BASE_SERVER),
-    ("subscribe", "/help/subscribe", BASE_SERVER),
+    ("acknowledgment", "/about/ourmembers.html", DOCS_SERVER),
+    ("faq", "/help/faq.html", DOCS_SERVER),
+    ("subscribe", "/help/subscribe.html", DOCS_SERVER),
     ("submit", "/submit", BASE_SERVER),
-    ("about", "/about", BASE_SERVER),
-    ("team", "/about/people/leadership_team", BASE_SERVER),
-    ("privacy_policy", "/help/policies/privacy_policy", BASE_SERVER),
-    ("copyright", "/help/license", BASE_SERVER),
-    ("a11y", "/help/web_accessibility", BASE_SERVER),
+    ("about", "/about/index.html", DOCS_SERVER),
+    ("team", "/about/people/leadership_team.html", DOCS_SERVER),
+    ("privacy_policy", "/help/policies/privacy_policy.html", DOCS_SERVER),
+    ("copyright", "/help/license/index.html", DOCS_SERVER),
+    ("a11y", "/help/web_accessibility.html", DOCS_SERVER),
     ("abs", "/abs/<arxiv:paper_id>v<string:version>", BASE_SERVER),
     ("abs_by_id", "/abs/<arxiv:paper_id>", BASE_SERVER),
     ("clickthrough", "/ct", BASE_SERVER),
+    ("help_submit", "/help/policies/instructions_for_submission.html", DOCS_SERVER),
+    ("new", "/new/index.html", DOCS_SERVER),
+    ("about_give", "/about/give.html", DOCS_SERVER),
+    ("about_people", "/about/people/index.html", DOCS_SERVER),
+    ("about_peole_developers", "/about/people/developers.html", DOCS_SERVER),
+    ("labs", "/labs/index.html", DOCS_SERVER),
+    ("help_robots", "/help/robots.html", DOCS_SERVER),
+    ("corr", "/corr/index.html", DOCS_SERVER),
+    ("help_email_protection", "/help/email-protection.html", DOCS_SERVER),
+    # a bit of indirection for descriptions since they are scatted around
+    ("desc_physics", "/help/physics/index.html", DOCS_SERVER),
+    ("desc_math", "/help/math/index.html", DOCS_SERVER),
+    ("desc_cs", "/corr/subjectclasses.html", DOCS_SERVER),
+    ("desc_q-bio", "/help/q-bio/index.html", DOCS_SERVER),
+    ("desc_q-fin", "/help/q-fin/index.html", DOCS_SERVER),
+    ("desc_stat", "/help/statistics/index.html", DOCS_SERVER),
+    ("desc_eess", "/help/eess/index.html", DOCS_SERVER),
+    ("desc_econ", "/help/econ/index.html", DOCS_SERVER),
 ]
 """
 URLs for external services, for use with :func:`flask.url_for`.
