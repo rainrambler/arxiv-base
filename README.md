@@ -126,11 +126,16 @@ blueprint
 to ``/static/[app name]/[ app version ]/[ blueprint name]``.
 
 ### Serving static files on S3
-**TODO Add actual step by step instructions on how to deploy static assets to S3**
-
 We use [Flask-S3](https://flask-s3.readthedocs.io/en/latest/) to serve static
-files via S3. Given the URL strategy above, following the instructions for
-Flask-S3 should just work.
+files via S3.
+
+Each version of base created needs its static assets uploaded to S3:
+```
+   AWS_ACCESS_KEY_ID=AKIRLOVEVAGUEDOCSKDKF \
+   AWS_SECRET_ACCESS_KEY=YKDFYOU4SHOULDHAVE2SEENITBEFOREskl2k \
+   FLASKS3_BUCKET_NAME=arxiv-web-static1 \
+   python upload_static_assets.py 
+```
 
 Be sure to initialize the integration after instantiating ``Base`` and
 registering your blueprints. For example:
@@ -149,7 +154,7 @@ def create_web_app() -> Flask:
 
 ## App tests
 
-Some tests to check app configuration and pattern compliance are provided in
+Some tests to check app configuration and pattern compliance are provided inl
 ``arxiv.base.app_tests``. See that module for usage.
 
 ## Editing and compiling sass
